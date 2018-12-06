@@ -1,0 +1,10 @@
+# this file contains the input to the automation script 
+execdir=.
+sourcedir=./programs
+datadir=.
+#each line below is for an experiment to be run. the format is
+#sourcefile outfile adapt resampstyle query evidence burnin sampsize intervals numchains
+bnets/fire-alarm.P fire-alarm1.csv off singleswitch faworld(yes) faworld(yes,yes) 100 1000 100 5
+bnets/fire-alarm.P fire-alarm2.csv on singleswitch faworld(yes) faworld(yes,yes) 100 1000 100 5
+bnets/fire-alarm.P fire-alarm3.csv off multiswitch(0.5) faworld(yes) faworld(yes,yes) 100 1000 100 5
+bnets/fire-alarm.P fire-alarm4.csv on multiswitch(0.5) faworld(yes) faworld(yes,yes) 100 1000 100 5

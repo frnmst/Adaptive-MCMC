@@ -1,0 +1,51 @@
+%:- table s/4.
+s(I, I, N, 0).
+s(I, J, N, M) :-
+	char_at(I, I1, N, a), s(I1, J1, N, M1), char_at(J1, J2, N, b), s(J2, J, N, M2),
+	M is max(M1+1, M2).
+
+char_at(I, I1, N, C) :-
+	I < N,
+	msw(c(I), X), X=C,
+%	(C=a; C=b),
+	I1 is I+1.
+
+values(c(_), [a,b]).
+set_sw(c(_), [0.5, 0.5]).
+
+:- dynamic answer/2.
+
+get_answer(Call, Arg) :-
+	retractall(answer(Call, Ans)),
+	Call,
+	(answer(Call, Arg)
+	->  true
+	;   assert(answer(Call, Arg))
+	),
+	fail.
+get_answer(Call, Arg) :-
+	answer(Call, Arg).
+
+evidence(M) :-
+	abolish_table_pred(s(_,_,_,_)),
+	get_answer(s(0,M,M,_), evidtrue).
+query(M, K) :-
+	get_answer(s(0,M,M,N), N),
+	N >= K.
+
+evid(M) :-
+	s(0,M,M,_).
+quer(M, K) :-
+	s(0,M,M,N),
+	N >= K.
+
+test(A,M) :-
+	adaptation(A),
+	resampling_style(multiswitch(0.1)),
+	writeln(multiswitch),
+	K is floor(sqrt(M)),
+	statistics(quer(M,K), evid(M), 1000, 10000, 10, 1, P, V, T, R),
+	writeln(P),
+	writeln(V),
+	writeln(T),
+	writeln(R).

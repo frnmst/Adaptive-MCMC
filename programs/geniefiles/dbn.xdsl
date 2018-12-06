@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<smile version="1.0" id="Network3" numsamples="1000" discsamples="10000">
+	<nodes>
+		<cpt id="rain0" dynamic="anchor">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="rain" dynamic="plate">
+			<state id="yes" />
+			<state id="no" />
+			<parents>rain0</parents>
+			<probabilities>0.7 0.3 0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="transport0" dynamic="anchor">
+			<state id="car" />
+			<state id="walk" />
+			<probabilities>0.3 0.7</probabilities>
+		</cpt>
+		<cpt id="transport" dynamic="plate">
+			<state id="car" />
+			<state id="walk" />
+			<parents>transport0</parents>
+			<probabilities>0.2 0.8 0.6 0.4</probabilities>
+		</cpt>
+		<cpt id="umbrella" dynamic="plate">
+			<state id="yes" />
+			<state id="no" />
+			<parents>transport rain</parents>
+			<probabilities>0.7 0.3 0.1 0.9 0.95 0.05 0.4 0.6</probabilities>
+		</cpt>
+	</nodes>
+	<dynamic numslices="4">
+		<cpt id="rain" order="1">
+			<parents>rain</parents>
+			<probabilities>0.7 0.3 0.2 0.8</probabilities>
+		</cpt>
+		<cpt id="transport" order="1">
+			<parents>transport</parents>
+			<probabilities>0.2 0.8 0.6 0.4</probabilities>
+		</cpt>
+	</dynamic>
+	<extensions>
+		<genie version="1.0" app="GeNIe 2.0.4843.0" name="Network3" faultnameformat="nodestate">
+			<plate leftwidth="120" rightwidth="120">20 30 620 330</plate>
+			<node id="rain">
+				<name>rain</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>286 91 334 121</position>
+			</node>
+			<node id="transport">
+				<name>transport</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>221 194 269 224</position>
+			</node>
+			<node id="umbrella">
+				<name>umbrella</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>348 300 396 330</position>
+			</node>
+			<node id="rain0">
+				<name>rain0</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>54 93 102 123</position>
+			</node>
+			<node id="transport0">
+				<name>transport0</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>70 204 118 234</position>
+			</node>
+		</genie>
+	</extensions>
+</smile>

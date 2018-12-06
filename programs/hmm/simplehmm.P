@@ -1,0 +1,38 @@
+%% Prism encoding of the HMM program
+
+% N - timestep, T - state, O - observation sequence
+
+query(N, T) :- hmm(N, T, _).
+
+evidence(N, L) :- hmm(N, _, L).
+
+hmm(N, T, O) :- 
+	msw(init, S),
+	hmm_part(0, N, S, T, O).
+	
+hmm_part(I, N, S, T, [O|R]) :-
+	I < N, 
+	NextI is I + 1,
+	hmm_trans(I, S, NextS),
+	hmm_emit(NextI, NextS, O),
+	hmm_part(NextI, N, NextS, T, R).
+
+hmm_part(I, N, S, T, []) :- N == I, T = S.
+
+hmm_trans(T, S, S1) :- 
+	msw(trans(T, S), S1).	
+
+hmm_emit(T, S, V) :-
+	msw(obs(T, S), V).
+
+values(init, [s0, s1]).
+set_sw(init, [0.6, 0.4]).
+
+values(trans(_,_), [s0, s1]).
+set_sw(trans(_,s0), [0.6, 0.4]).
+set_sw(trans(_,s1), [0.5, 0.5]).
+
+values(obs(_,_), [a, b]).
+set_sw(obs(_,s0), [0.7, 0.3]).
+set_sw(obs(_,s1), [0.2, 0.8]).
+

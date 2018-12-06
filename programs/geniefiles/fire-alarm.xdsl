@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<smile version="1.0" id="Network1" numsamples="1000" discsamples="10000">
+	<nodes>
+		<cpt id="Fire">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.1 0.9</probabilities>
+		</cpt>
+		<cpt id="Tampering">
+			<state id="yes" />
+			<state id="no" />
+			<probabilities>0.15 0.85</probabilities>
+		</cpt>
+		<cpt id="Smoke">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Fire</parents>
+			<probabilities>0.95 0.05 0.05 0.95</probabilities>
+		</cpt>
+		<cpt id="Alarm">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Fire Tampering</parents>
+			<probabilities>0.5 0.5 0.9 0.1 0.85 0.15 0.05 0.95</probabilities>
+		</cpt>
+		<cpt id="Leaving">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Alarm</parents>
+			<probabilities>0.88 0.12 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Report">
+			<state id="yes" />
+			<state id="no" />
+			<parents>Leaving</parents>
+			<probabilities>0.75 0.25 0.1 0.9</probabilities>
+		</cpt>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 2.0.4843.0" name="fire-alarm" faultnameformat="nodestate">
+			<node id="Fire">
+				<name>Fire</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>455 101 495 126</position>
+			</node>
+			<node id="Tampering">
+				<name>Tampering</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>565 92 629 132</position>
+			</node>
+			<node id="Smoke">
+				<name>Smoke</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>414 165 463 195</position>
+			</node>
+			<node id="Alarm">
+				<name>Alarm</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>513 164 559 192</position>
+			</node>
+			<node id="Leaving">
+				<name>Leaving</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>545 225 599 258</position>
+			</node>
+			<node id="Report">
+				<name>Report</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>551 290 600 320</position>
+			</node>
+		</genie>
+	</extensions>
+</smile>

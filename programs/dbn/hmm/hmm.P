@@ -1,0 +1,32 @@
+% exact filtered distribution after 4 time steps
+% P(s0) = 0.798; P(s1) = 0.202
+hmm([State], Time) :-
+	msw_init(init, S0),
+	hmm_part(0, Time, [S0], [State]).
+
+hmm_part(Time1, Time1, State1, State1).
+hmm_part(Time1, Time2, [State1], [State2]) :-
+	Time1 < Time2,
+	msw_trans(trans(State1, Time1), StateNext),
+	TimeNext is Time1 + 1,
+	obs(TimeNext, O),
+	msw_obs(emit(StateNext, TimeNext), O),
+	hmm_part(TimeNext, Time2, [StateNext], [State2]).
+
+%% switch definitions
+values(init, [s0,s1]).
+values(trans(s0,_), [s0,s1]).
+values(trans(s1,_), [s0,s1]).
+values(emit(s0,_), [a,b]).
+values(emit(s1,_), [a,b]).
+
+set_sw(init, [0.6,0.4]). 
+set_sw(trans(s0,_), [0.6,0.4]).
+set_sw(trans(s1,_), [0.5,0.5]). 
+set_sw(emit(s0,_),[0.7,0.3]).
+set_sw(emit(s1,_),[0.2,0.8]).
+
+obs(1, a).
+obs(2, b).
+obs(3, b).
+obs(4, a).

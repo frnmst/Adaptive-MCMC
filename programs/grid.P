@@ -1,0 +1,196 @@
+
+genvars(N, M, Vl:(N,M)) :-
+	Len is N*M,
+	basics:length(Vl, Len).
+
+getvar(Vl:(_N,M), (I, J), X) :-
+	((I==0; J==0)
+	->  X = 0
+	;   Idx is M * (I-1) + J,
+ 	    basics:ith(Idx, Vl, X)
+	).
+
+parents(Idx, Pars) :- findall(P, parent(Idx, P), Pars).
+
+parent((I,J), (I1, J)) :- I > 1, I1 is I-1.
+parent((1,_J), (0,0)).
+parent((I,J), (I, J1)) :- J > 1, J1 is J-1.
+parent((_I,1), (0,0)).
+
+getvarlist(_Dict, [], []).
+getvarlist(Dict, [Idx|Idxs], [V|Vs]) :-
+	getvar(Dict, Idx, V),
+	getvarlist(Dict, Idxs, Vs).
+
+genmsw(Dict, (I,J), msw(Proc, Var)) :-
+	getvar(Dict, (I,J), Var),
+	parents((I,J), Parents),
+	getvarlist(Dict, Parents, ParentVars),
+	Proc =.. [f, I, J | ParentVars].
+
+genmswlist(_, [], []).
+genmswlist(Dict, [Idx|Idxs], [M|Ms]) :-
+	genmsw(Dict, Idx, M),
+	genmswlist(Dict, Idxs, Ms).
+
+genrange(N, I, L) :-
+	(I > N
+	->  L=[]
+	;   I1 is I+1,
+	    L = [I|L1],
+	    genrange(N, I1,L1)
+	).
+genrange(N, L) :-
+	genrange(N, 1, L).
+
+prod([], _L2) --> [].
+prod([C|Cs], L2) --> cprod(C, L2), prod(Cs, L2).
+
+cprod(_, []) --> [].
+cprod(C, [D|Ds]) --> [(C,D)], cprod(C, Ds).
+
+genidx(N, M, Idxs) :-
+	genrange(N, Rows),
+	genrange(M, Cols),
+	phrase(prod(Rows, Cols), Idxs).
+
+gengrid(N, M, G) :-
+	genvars(N, M, Dict),
+	genidx(N, M, Idxs),
+	genmswlist(Dict, Idxs, G).
+
+genworld(N, M, C) :-
+	genvars(N, M, Dict),
+	Dict = Vl:_,
+	H =.. [world|Vl],
+	genidx(N, M, Idxs),
+	genmswlist(Dict, Idxs, Msws),
+	tocommalist(Msws, B),
+	C = (H :- B).
+
+tocommalist([], true).
+tocommalist([X], X) :- !.
+tocommalist([X|Xs], (X, Vs)) :-
+	tocommalist(Xs, Vs).
+
+
+genspec(Pred, Idxs, Atom, Body) :-
+	param(dim(N, M)),
+	genvars(N,M,Dict),
+	Dict = Vl:_,
+	getvarlist(Dict, Idxs, HVs),
+	B =.. [world|Vl],
+	H =.. [Pred|HVs],
+	Atom = H,
+	Body = B.
+
+get_evidvars([], X, [], X).
+get_evidvars([_|Xs], [Y|Ys], [Y|Ws], Zs) :-
+	get_evidvars(Xs, Ys, Ws, Zs).
+
+gencondquery :-
+	writeln('condquery'),
+	param(query(QVs, _)),
+	param(evidence(EVars, EVals)),
+	basics:append(QVs, EVars, CVars),
+	genspec(condquery1, CVars, Cqh, Cqb),
+	writeln((Cqh :- Cqb)),
+	Cqh =.. [_|Cqvars],
+	writeln((Cqvars, QVs)),
+	get_evidvars(QVs, Cqvars, QVars, EvidVars),
+	writeln((EvidVars, EVals)),
+	EvidVars = EVals,
+	Head =.. [cond|QVars],
+	writeln((Head :- Cqb)),
+	assert((Head :- Cqb)).
+	
+	
+	
+genprog :-
+	param(dim(N, M)),
+	param(query(QVs, QVals)),
+	param(evidence(EVars, EVals)),
+	retractall(prog(_)),
+	genworld(N, M, W), 
+	assert((W)),
+	genspec(query, QVs, Qh, Qb),
+	assert((Qh :- Qb)),
+	genspec(evidence, EVars, Eh, Eb),
+	assert((Eh :- Eb)),
+	Query =.. [query|QVals],
+	Evidence =.. [evidence|EVals],
+	assert((t(query) :- Query)),
+	assert((t(evidence) :- Evidence)),
+	gencondquery,
+	genswitches,
+	writeprog.
+
+writeprog :-
+	param(file(Pgm)),
+	telling(OF),
+	tell(Pgm),
+	writecomments,
+	listing(world),
+	listing(query),
+	listing(evidence),
+	listing(t),
+	listing(cond),
+	writeparams,
+	told,
+	tell(OF).
+writecomments :-
+	param(X),
+	write('% '), writeln(X),
+	fail; true.
+writeparams :-
+	write(values(f(_,_,_,_), [t,f])), writeln('.'),
+	writeln('set_params :- '),
+	writeswitches,
+	writeln('true.').
+writeswitches :-
+	switch(P),
+	write(set_sw(P, [0.01, 0.99])), writeln(','),
+	fail;
+	true.
+
+genswitches :-
+	param(dim(N,M)),
+	genidx(N, M, Idxs),
+	genswitches(Idxs).
+
+genswitches([]).
+genswitches([(I,J)|Is]) :-
+	parents((I,J), Pars),
+	genparams(Pars, Params, Vars),
+%	writeln(params(I, J, Pars, Params)),
+	SW =.. [f, I, J | Params],
+	bindall(SW, Vars),
+	genswitches(Is).
+
+genparams([], [], []).
+genparams([X|Xs], [Y|Ys], Zs) :-
+	(X == (0,0)
+	-> Y=0, Zs1 = Zs
+	;  Zs = [Y|Zs1]
+	),
+	genparams(Xs, Ys, Zs1).
+	
+
+bind(_S, []).
+bind(S, [V|Vs]) :-
+	setvalue(V),
+	bind(S, Vs).
+
+bindall(SW, Vars):-
+	bind(SW, Vars),
+	assert(switch(SW)),
+	fail.
+bindall(_,_).
+	
+setvalue(t).
+setvalue(f).
+
+param(dim(6,6)).
+param(query([(2,2)], [t])).
+param(evidence([(1,6),(3,6),(5,6),(6,1),(6,3),(6,5)], [t,t,t,t,t,t])).
+param(file('test66.psm')).

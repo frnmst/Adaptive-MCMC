@@ -1,0 +1,360 @@
+% bayesian network encoding a patient-monitoring alarm system
+% Reference: I. Beinlich and G. Suermondt and R. Chavez and G. Cooper,
+% The ALARM monitoring system: A case study with two probabilistic inference
+% techniques for belief networks, Proc.~2'nd European Conf.~on AI and Medicine,
+% Springer-Verlag, Berlin, 1989.
+
+% test-queries
+% p(minvolset=high | bp=high, cvp=high, expco2=high, hrbp=normal) = 0.19615049
+
+values(history(_), [true,false]).
+values(cvp(_), [low,normal,high]).
+values(pcwp(_), [low,normal,high]).
+values(hypovolemia, [true,false]).
+values(lvedvolume(_,_), [low,normal,high]).
+values(lvfailure, [true,false]).
+values(strokevolume(_,_), [low,normal,high]).
+values(errlowoutput, [true,false]).
+values(hrbp(_,_), [low,normal,high]).
+values(hrekg(_,_), [low,normal,high]).
+values(errcauter, [true,false]).
+values(hrsat(_,_), [low,normal,high]).
+values(insuffanesth, [true,false]).
+values(anaphylaxis, [true,false]).
+values(tpr(_), [low,normal,high]).
+values(expco2(_,_), [zero,low,normal,high]).
+values(kinkedtube, [true,false]).
+values(minvol(_,_), [zero,low,normal,high]).
+values(fio2, [low,normal]).
+values(pvsat(_,_), [low,normal,high]).
+values(sao2(_,_), [low,normal,high]).
+values(pap(_), [low,normal,high]).
+values(pulmembolus, [true,false]).
+values(shunt(_,_), [normal,high]).
+values(intubation, [normal,esophageal,onesided]).
+values(press(_,_,_), [zero,low,normal,high]).
+values(disconnect, [true,false]).
+values(minvolset, [low,normal,high]).
+values(ventmach(_), [zero,low,normal,high]).
+values(venttube(_,_), [zero,low,normal,high]).
+values(ventlung(_,_,_), [zero,low,normal,high]).
+values(ventalv(_,_), [zero,low,normal,high]).
+values(artco2(_), [low,normal,high]).
+values(catechol(_,_,_,_), [normal,high]).
+values(hr(_), [low,normal,high]).
+values(co(_,_), [low,normal,high]).
+values(bp(_,_), [low,normal,high]).
+
+%% set_params :- 
+set_sw(history(false), [0.01,0.99]).
+set_sw(history(true), [0.9,0.1]).
+set_sw(cvp(normal), [0.04,0.95,0.01]).
+set_sw(cvp(low), [0.95,0.04,0.01]).
+set_sw(cvp(high), [0.01,0.29,0.70]).
+set_sw(pcwp(normal), [0.04,0.95,0.01]).
+set_sw(pcwp(low), [0.95,0.04,0.01]).
+set_sw(pcwp(high), [0.01,0.04,0.95]).
+set_sw(hypovolemia, [0.2,0.8]).
+set_sw(lvedvolume(false,true), [0.98,0.01,0.01]).
+set_sw(lvedvolume(true,false), [0.01,0.09,0.90]).
+set_sw(lvedvolume(true,true), [0.95,0.04,0.01]).
+set_sw(lvedvolume(false,false), [0.05,0.90,0.05]).
+set_sw(lvfailure, [0.05,0.95]).
+set_sw(strokevolume(false,true), [0.95,0.04,0.01]).
+set_sw(strokevolume(true,false), [0.50,0.49,0.01]).
+set_sw(strokevolume(true,true), [0.98,0.01,0.01]).
+set_sw(strokevolume(false,false), [0.05,0.90,0.05]).
+set_sw(errlowoutput, [0.05,0.95]).
+set_sw(hrbp(false,normal), [0.98,0.01,0.01]).
+set_sw(hrbp(true,high), [0.01,0.98,0.01]).
+set_sw(hrbp(false,high), [0.01,0.01,0.98]).
+set_sw(hrbp(true,low), [0.98,0.01,0.01]).
+set_sw(hrbp(false,low), [0.40,0.59,0.01]).
+set_sw(hrbp(true,normal), [0.3,0.4,0.3]).
+set_sw(hrekg(false,normal), [0.98,0.01,0.01]).
+set_sw(hrekg(true,high), [0.01,0.98,0.01]).
+set_sw(hrekg(false,high), [0.01,0.01,0.98]).
+set_sw(hrekg(true,low), [0.3333333,0.3333333,0.3333333]).
+set_sw(hrekg(false,low), [0.3333333,0.3333333,0.3333333]).
+set_sw(hrekg(true,normal), [0.3333333,0.3333333,0.3333333]).
+set_sw(errcauter, [0.1,0.9]).
+set_sw(hrsat(false,normal), [0.98,0.01,0.01]).
+set_sw(hrsat(true,high), [0.01,0.98,0.01]).
+set_sw(hrsat(false,high), [0.01,0.01,0.98]).
+set_sw(hrsat(true,low), [0.3333333,0.3333333,0.3333333]).
+set_sw(hrsat(false,low), [0.3333333,0.3333333,0.3333333]).
+set_sw(hrsat(true,normal), [0.3333333,0.3333333,0.3333333]).
+set_sw(insuffanesth, [0.1,0.9]).
+set_sw(anaphylaxis, [0.01,0.99]).
+set_sw(tpr(false), [0.3,0.4,0.3]).
+set_sw(tpr(true), [0.98,0.01,0.01]).
+set_sw(expco2(normal,low), [0.97,0.01,0.01,0.01]).
+set_sw(expco2(low,low), [0.01,0.97,0.01,0.01]).
+set_sw(expco2(normal,normal), [0.01,0.01,0.97,0.01]).
+set_sw(expco2(normal,zero), [0.01,0.97,0.01,0.01]).
+set_sw(expco2(high,high), [0.01,0.01,0.01,0.97]).
+set_sw(expco2(high,low), [0.01,0.01,0.97,0.01]).
+set_sw(expco2(low,high), [0.01,0.01,0.01,0.97]).
+set_sw(expco2(normal,high), [0.01,0.01,0.01,0.97]).
+set_sw(expco2(low,normal), [0.01,0.01,0.97,0.01]).
+set_sw(expco2(low,zero), [0.97,0.01,0.01,0.01]).
+set_sw(expco2(high,zero), [0.01,0.97,0.01,0.01]).
+set_sw(expco2(high,normal), [0.97,0.01,0.01,0.01]).
+set_sw(kinkedtube, [0.04,0.96]).
+set_sw(minvol(normal,low), [0.01,0.01,0.01,0.97]).
+set_sw(minvol(esophageal,low), [0.97,0.01,0.01,0.01]).
+set_sw(minvol(normal,normal), [0.50,0.48,0.01,0.01]).
+set_sw(minvol(normal,zero), [0.97,0.01,0.01,0.01]).
+set_sw(minvol(onesided,low), [0.60,0.38,0.01,0.01]).
+set_sw(minvol(onesided,zero), [0.01,0.01,0.97,0.01]).
+set_sw(minvol(normal,high), [0.01,0.97,0.01,0.01]).
+set_sw(minvol(esophageal,high), [0.01,0.01,0.97,0.01]).
+set_sw(minvol(onesided,high), [0.01,0.01,0.01,0.97]).
+set_sw(minvol(onesided,normal), [0.97,0.01,0.01,0.01]).
+set_sw(minvol(esophageal,normal), [0.50,0.48,0.01,0.01]).
+set_sw(minvol(esophageal,zero), [0.01,0.97,0.01,0.01]).
+set_sw(fio2, [0.05,0.95]).
+set_sw(pvsat(normal,low), [0.95,0.04,0.01]).
+set_sw(pvsat(low,low), [0.95,0.04,0.01]).
+set_sw(pvsat(normal,normal), [0.95,0.04,0.01]).
+set_sw(pvsat(normal,zero), [0.99,0.01,0.00]).
+set_sw(pvsat(normal,high), [0.01,0.01,0.98]).
+set_sw(pvsat(low,high), [0.01,0.95,0.04]).
+set_sw(pvsat(low,normal), [1.0,0.0,0.0]).
+set_sw(pvsat(low,zero), [1.0,0.0,0.0]).
+set_sw(sao2(high,high), [0.69,0.30,0.01]).
+set_sw(sao2(normal,normal), [0.01,0.98,0.01]).
+set_sw(sao2(normal,high), [0.98,0.01,0.01]).
+set_sw(sao2(low,high), [0.98,0.01,0.01]).
+set_sw(sao2(low,normal), [0.98,0.01,0.01]).
+set_sw(sao2(high,normal), [0.01,0.01,0.98]).
+set_sw(pap(false), [0.05,0.90,0.05]).
+set_sw(pap(true), [0.01,0.19,0.80]).
+set_sw(pulmembolus, [0.01,0.99]).
+set_sw(shunt(esophageal,true), [0.1,0.9]).
+set_sw(shunt(normal,false), [0.95,0.05]).
+set_sw(shunt(esophageal,false), [0.95,0.05]).
+set_sw(shunt(onesided,true), [0.01,0.99]).
+set_sw(shunt(normal,true), [0.1,0.9]).
+set_sw(shunt(onesided,false), [0.05,0.95]).
+set_sw(intubation, [0.92,0.03,0.05]).
+set_sw(press(normal,true,zero), [0.97,0.01,0.01,0.01]).
+set_sw(press(esophageal,false,high), [0.01,0.01,0.38,0.60]).
+set_sw(press(esophageal,false,low), [0.01,0.01,0.08,0.90]).
+set_sw(press(normal,false,zero), [0.01,0.01,0.01,0.97]).
+set_sw(press(esophageal,true,low), [0.01,0.15,0.25,0.59]).
+set_sw(press(onesided,true,high), [0.97,0.01,0.01,0.01]).
+set_sw(press(onesided,true,low), [0.97,0.01,0.01,0.01]).
+set_sw(press(esophageal,false,zero), [0.97,0.01,0.01,0.01]).
+set_sw(press(esophageal,true,high), [0.20,0.70,0.09,0.01]).
+set_sw(press(onesided,true,zero), [0.01,0.01,0.08,0.90]).
+set_sw(press(onesided,false,high), [0.01,0.01,0.01,0.97]).
+set_sw(press(onesided,false,low), [0.01,0.01,0.01,0.97]).
+set_sw(press(onesided,false,zero), [0.10,0.84,0.05,0.01]).
+set_sw(press(esophageal,true,normal), [0.01,0.97,0.01,0.01]).
+set_sw(press(normal,false,normal), [0.01,0.01,0.01,0.97]).
+set_sw(press(esophageal,true,zero), [0.01,0.30,0.49,0.20]).
+set_sw(press(esophageal,false,normal), [0.97,0.01,0.01,0.01]).
+set_sw(press(onesided,false,normal), [0.40,0.58,0.01,0.01]).
+set_sw(press(onesided,true,normal), [0.01,0.01,0.97,0.01]).
+set_sw(press(normal,true,high), [0.20,0.75,0.04,0.01]).
+set_sw(press(normal,true,normal), [0.97,0.01,0.01,0.01]).
+set_sw(press(normal,true,low), [0.05,0.25,0.25,0.45]).
+set_sw(press(normal,false,high), [0.01,0.90,0.08,0.01]).
+set_sw(press(normal,false,low), [0.01,0.29,0.30,0.40]).
+set_sw(disconnect, [0.1,0.9]).
+set_sw(minvolset, [0.05,0.90,0.05]).
+set_sw(ventmach(normal), [0.05,0.01,0.93,0.01]).
+set_sw(ventmach(low), [0.05,0.93,0.01,0.01]).
+set_sw(ventmach(high), [0.05,0.01,0.01,0.93]).
+set_sw(venttube(true,zero), [0.97,0.01,0.01,0.01]).
+set_sw(venttube(false,normal), [0.01,0.97,0.01,0.01]).
+set_sw(venttube(true,high), [0.01,0.01,0.97,0.01]).
+set_sw(venttube(false,zero), [0.97,0.01,0.01,0.01]).
+set_sw(venttube(false,high), [0.01,0.01,0.01,0.97]).
+set_sw(venttube(true,low), [0.97,0.01,0.01,0.01]).
+set_sw(venttube(false,low), [0.97,0.01,0.01,0.01]).
+set_sw(venttube(true,normal), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(normal,true,zero), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(esophageal,false,high), [0.01,0.01,0.97,0.01]).
+set_sw(ventlung(esophageal,false,low), [0.50,0.48,0.01,0.01]).
+set_sw(ventlung(normal,false,zero), [0.30,0.68,0.01,0.01]).
+set_sw(ventlung(esophageal,true,low), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(onesided,true,high), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(onesided,true,low), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(esophageal,false,zero), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(esophageal,true,high), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(onesided,true,zero), [0.40,0.58,0.01,0.01]).
+set_sw(ventlung(onesided,false,high), [0.01,0.01,0.01,0.97]).
+set_sw(ventlung(onesided,false,low), [0.30,0.68,0.01,0.01]).
+set_sw(ventlung(onesided,false,zero), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(esophageal,true,normal), [0.01,0.97,0.01,0.01]).
+set_sw(ventlung(normal,false,normal), [0.01,0.01,0.01,0.97]).
+set_sw(ventlung(esophageal,true,zero), [0.95,0.03,0.01,0.01]).
+set_sw(ventlung(esophageal,false,normal), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(onesided,false,normal), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(onesided,true,normal), [0.01,0.01,0.97,0.01]).
+set_sw(ventlung(normal,true,high), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(normal,true,normal), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(normal,true,low), [0.97,0.01,0.01,0.01]).
+set_sw(ventlung(normal,false,high), [0.01,0.97,0.01,0.01]).
+set_sw(ventlung(normal,false,low), [0.95,0.03,0.01,0.01]).
+set_sw(ventalv(normal,low), [0.01,0.01,0.01,0.97]).
+set_sw(ventalv(esophageal,low), [0.97,0.01,0.01,0.01]).
+set_sw(ventalv(normal,normal), [0.01,0.01,0.97,0.01]).
+set_sw(ventalv(normal,zero), [0.97,0.01,0.01,0.01]).
+set_sw(ventalv(onesided,low), [0.01,0.97,0.01,0.01]).
+set_sw(ventalv(onesided,zero), [0.01,0.01,0.97,0.01]).
+set_sw(ventalv(normal,high), [0.03,0.95,0.01,0.01]).
+set_sw(ventalv(esophageal,high), [0.01,0.94,0.04,0.01]).
+set_sw(ventalv(onesided,high), [0.01,0.88,0.10,0.01]).
+set_sw(ventalv(onesided,normal), [0.97,0.01,0.01,0.01]).
+set_sw(ventalv(esophageal,normal), [0.01,0.01,0.01,0.97]).
+set_sw(ventalv(esophageal,zero), [0.01,0.97,0.01,0.01]).
+set_sw(artco2(normal), [0.04,0.92,0.04]).
+set_sw(artco2(zero), [0.01,0.01,0.98]).
+set_sw(artco2(low), [0.01,0.01,0.98]).
+set_sw(artco2(high), [0.90,0.09,0.01]).
+set_sw(catechol(low,true,low,low), [0.01,0.99]).
+set_sw(catechol(high,false,low,low), [0.01,0.99]).
+set_sw(catechol(high,false,high,normal), [0.01,0.99]).
+set_sw(catechol(high,true,low,low), [0.01,0.99]).
+set_sw(catechol(high,false,normal,high), [0.3,0.7]).
+set_sw(catechol(normal,true,high,high), [0.99,0.01]).
+set_sw(catechol(normal,false,low,normal), [0.05,0.95]).
+set_sw(catechol(high,true,normal,low), [0.01,0.99]).
+set_sw(catechol(low,false,high,high), [0.95,0.05]).
+set_sw(catechol(high,true,high,low), [0.01,0.99]).
+set_sw(catechol(low,false,normal,normal), [0.05,0.95]).
+set_sw(catechol(low,true,normal,normal), [0.05,0.95]).
+set_sw(catechol(normal,true,high,low), [0.01,0.99]).
+set_sw(catechol(low,true,high,high), [0.95,0.05]).
+set_sw(catechol(normal,false,normal,high), [0.99,0.01]).
+set_sw(catechol(high,false,high,high), [0.3,0.7]).
+set_sw(catechol(high,true,normal,normal), [0.01,0.99]).
+set_sw(catechol(normal,true,low,normal), [0.01,0.99]).
+set_sw(catechol(high,true,low,normal), [0.01,0.99]).
+set_sw(catechol(normal,true,low,high), [0.7,0.3]).
+set_sw(catechol(normal,false,high,low), [0.05,0.95]).
+set_sw(catechol(normal,false,low,high), [0.7,0.3]).
+set_sw(catechol(normal,false,normal,low), [0.01,0.99]).
+set_sw(catechol(high,false,normal,low), [0.01,0.99]).
+set_sw(catechol(normal,false,normal,normal), [0.05,0.95]).
+set_sw(catechol(high,false,low,normal), [0.01,0.99]).
+set_sw(catechol(low,false,high,low), [0.05,0.95]).
+set_sw(catechol(high,false,high,low), [0.01,0.99]).
+set_sw(catechol(high,false,low,high), [0.1,0.9]).
+set_sw(catechol(high,true,high,normal), [0.01,0.99]).
+set_sw(catechol(low,true,high,low), [0.01,0.99]).
+set_sw(catechol(normal,true,low,low), [0.01,0.99]).
+set_sw(catechol(normal,true,high,normal), [0.05,0.95]).
+set_sw(catechol(normal,false,low,low), [0.01,0.99]).
+set_sw(catechol(low,false,normal,high), [0.95,0.05]).
+set_sw(catechol(normal,true,normal,high), [0.7,0.3]).
+set_sw(catechol(low,false,normal,low), [0.01,0.99]).
+set_sw(catechol(high,true,low,high), [0.1,0.9]).
+set_sw(catechol(low,false,low,low), [0.01,0.99]).
+set_sw(catechol(high,true,normal,high), [0.1,0.9]).
+set_sw(catechol(low,true,normal,low), [0.01,0.99]).
+set_sw(catechol(low,true,normal,high), [0.7,0.3]).
+set_sw(catechol(low,true,low,normal), [0.01,0.99]).
+set_sw(catechol(low,true,high,normal), [0.05,0.95]).
+set_sw(catechol(low,true,low,high), [0.7,0.3]).
+set_sw(catechol(normal,true,normal,low), [0.01,0.99]).
+set_sw(catechol(normal,true,normal,normal), [0.05,0.95]).
+set_sw(catechol(high,true,high,high), [0.3,0.7]).
+set_sw(catechol(high,false,normal,normal), [0.01,0.99]).
+set_sw(catechol(normal,false,high,normal), [0.05,0.95]).
+set_sw(catechol(normal,false,high,high), [0.99,0.01]).
+set_sw(catechol(low,false,low,normal), [0.05,0.95]).
+set_sw(catechol(low,false,high,normal), [0.05,0.95]).
+set_sw(catechol(low,false,low,high), [0.7,0.3]).
+set_sw(hr(normal), [0.05,0.90,0.05]).
+set_sw(hr(high), [0.01,0.09,0.90]).
+set_sw(co(normal,low), [0.95,0.04,0.01]).
+set_sw(co(low,low), [0.98,0.01,0.01]).
+set_sw(co(normal,normal), [0.04,0.95,0.01]).
+set_sw(co(high,high), [0.01,0.01,0.98]).
+set_sw(co(high,low), [0.80,0.19,0.01]).
+set_sw(co(low,high), [0.30,0.69,0.01]).
+set_sw(co(normal,high), [0.01,0.30,0.69]).
+set_sw(co(low,normal), [0.95,0.04,0.01]).
+set_sw(co(high,normal), [0.01,0.04,0.95]).
+set_sw(bp(normal,low), [0.98,0.01,0.01]).
+set_sw(bp(low,low), [0.98,0.01,0.01]).
+set_sw(bp(normal,normal), [0.10,0.85,0.05]).
+set_sw(bp(high,high), [0.01,0.09,0.90]).
+set_sw(bp(high,low), [0.90,0.09,0.01]).
+set_sw(bp(low,high), [0.3,0.6,0.1]).
+set_sw(bp(normal,high), [0.05,0.40,0.55]).
+set_sw(bp(low,normal), [0.98,0.01,0.01]).
+set_sw(bp(high,normal), [0.05,0.20,0.75]).
+
+world(History,Cvp,Pcwp,Hypovolemia,Lvedvolume,Lvfailure,Strokevolume,
+      Errlowoutput,Hrbp,Hrekg,Errcauter,Hrsat,Insuffanesth,Anaphylaxis,
+      Tpr,Expco2,Kinkedtube,Minvol,Fio2,Pvsat,Sao2,Pap,Pulmembolus,Shunt,
+      Intubation,Press,Disconnect,Minvolset,Ventmach,Venttube,Ventlung,
+      Ventalv,Artco2,Catechol,Hr,Co,Bp) :-
+	msw(fio2, Fio2),
+	msw(anaphylaxis, Anaphylaxis),
+	msw(lvfailure, Lvfailure),
+	msw(intubation, Intubation),
+	msw(errcauter, Errcauter),
+	msw(minvolset, Minvolset),
+	msw(kinkedtube, Kinkedtube),
+	msw(insuffanesth, Insuffanesth),
+	msw(disconnect, Disconnect),
+	msw(pulmembolus, Pulmembolus),
+	msw(hypovolemia, Hypovolemia),
+	msw(errlowoutput, Errlowoutput),
+	msw(pap(Pulmembolus), Pap),
+	msw(ventmach(Minvolset), Ventmach),
+	msw(shunt(Intubation,Pulmembolus), Shunt),
+	msw(lvedvolume(Hypovolemia,Lvfailure), Lvedvolume),
+	msw(tpr(Anaphylaxis), Tpr),
+	msw(strokevolume(Hypovolemia,Lvfailure), Strokevolume),
+	msw(history(Lvfailure), History),
+	msw(venttube(Disconnect,Ventmach), Venttube),
+	msw(cvp(Lvedvolume), Cvp),
+	msw(pcwp(Lvedvolume), Pcwp),
+	msw(ventlung(Intubation,Kinkedtube,Venttube), Ventlung),
+	msw(press(Intubation,Kinkedtube,Venttube), Press),
+	msw(ventalv(Intubation,Ventlung), Ventalv),
+	msw(minvol(Intubation,Ventlung), Minvol),
+	msw(artco2(Ventalv), Artco2),
+	msw(pvsat(Fio2,Ventalv), Pvsat),
+	msw(expco2(Artco2,Ventlung), Expco2),
+	msw(sao2(Pvsat,Shunt), Sao2),
+	msw(catechol(Artco2,Insuffanesth,Sao2,Tpr), Catechol),
+	msw(hr(Catechol), Hr),
+	msw(hrsat(Errcauter,Hr), Hrsat),
+	msw(co(Hr,Strokevolume), Co),
+	msw(hrbp(Errlowoutput,Hr), Hrbp),
+	msw(hrekg(Errcauter,Hr), Hrekg),
+	msw(bp(Co,Tpr), Bp).
+
+query_bp(Bp) :-
+	world(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,Bp).
+
+query_intubation(I) :-
+	world(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,I,_,_,_,_,_,_,_,_,_,_,_,_).
+
+query_minvolset(M) :-
+	world(_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,M,_,_,_,_,_,_,_,_,_).
+
+evidence_cvp_expco2(Cvp, Expco2) :-
+	world(_,Cvp,_,_,_,_,_,_,_,_,_,_,_,_,_,Expco2,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_).
+
+evidence_bp_cvp_expco2_hrbp(Bp, Cvp, Expco2, Hrbp) :- world(_,Cvp,_,_,_,_,_,_,Hrbp,_,_,_,_,_,_,Expco2,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,Bp).
+
+extreme_evidence :-
+      world(_,normal,normal,_,_,_,_,_,_,normal,_,normal,_,_,normal,low,_,low,normal,normal,normal,normal,_,high,_,zero,_,_,low,zero,low,normal,normal,high,normal,high,high).
+
+% world(History,normal,normal,Hypovolemia,Lvedvolume,Lvfailure,Strokevolume,
+%       Errlowoutput,Hrbp,normal,Errcauter,Hrsat,Insuffanesth,Anaphylaxis,
+%       normal,low,Kinkedtube,low,normal,normal,normal,normal,Pulmembolus,high,
+%       Intubation,zero,Disconnect,Minvolset,low,zero,low,
+%       normal,normal,high,normal,Co,Bp).
+
+extreme_query :-
+		world(_,_,_,_,_,_,_,_,_,_,true,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_).

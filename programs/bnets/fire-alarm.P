@@ -1,0 +1,33 @@
+%% Fire-alarm network %%
+
+%% Fire-Alarm bayesian network from PRISM implementation %%
+faworld(Fi, Ta, Al, Sm, Le, Re) :-
+	msw(fi,Fi),		% P(Fire)
+	msw(ta,Ta),		% P(Tampering)
+	msw(sm(Fi),Sm),		% CPT P(Smoke | Fire)
+	msw(al(Fi,Ta),Al),	% CPT P(Alarm | Fire,Tampering)
+	msw(le(Al),Le),		% CPT P(Leaving | Alarm)
+	msw(re(Le),Re).		% CPT P(Report | Leaving)
+
+faworld(Sm, Re) :-
+	faworld(_, _, _, Sm, _, Re).
+
+faworld(Al) :-
+	faworld(_, _, Al, _, _, _).
+
+%% all variables are binary
+values(_, [yes, no]).
+%% parameters %%
+%% set_params :-
+set_sw(fi,[0.1,0.9]).
+set_sw(ta,[0.15,0.85]).
+set_sw(sm(yes),[0.95,0.05]).
+set_sw(sm(no),[0.05,0.95]).
+set_sw(al(yes,yes),[0.50,0.50]).
+set_sw(al(yes,no),[0.90,0.10]).
+set_sw(al(no,yes),[0.85,0.15]).
+set_sw(al(no,no),[0.05,0.95]).
+set_sw(le(yes),[0.88,0.12]).
+set_sw(le(no),[0.01,0.99]).
+set_sw(re(yes),[0.75,0.25]).
+set_sw(re(no),[0.10,0.90]).

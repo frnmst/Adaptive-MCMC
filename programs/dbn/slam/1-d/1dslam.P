@@ -1,0 +1,114 @@
+%% PRISM program for Robot SLAM in 1-d world
+%% Reference: Bayesian Map Learning in Dynamic Environments
+
+:- import split_list/4, append/3 from lists.
+
+% ++++++++++++++++++++++
+% + 1 + 2 + . . . + 10 +
+% ++++++++++++++++++++++
+
+% number of cells in our 1-d world
+numcells(10).
+
+
+% observed color of a cell
+obs_color(Time, Loc, Obs) :-
+	true_color(Loc, Color),
+	msw_obs(color_noise(Time, Loc), Flip),
+	(Flip = no ->
+	   Obs = Color
+	;
+	   flip(Color, Obs)
+	).
+
+% The world of the robot is given by its current location and its current map.
+% The dynamic bayesian network describing the world is described in the paper.
+world(Time, Loc, Map) :-
+	init_location(L0),
+	numcells(N),
+	init_map(1, N, M0),
+	world_part(0, Time, L0, Loc, M0, Map).
+
+init_location(L) :-
+	msw_init(prior_loc(0), L).
+
+init_map(N, N, [H]) :-
+	msw_init(prior_color(0, N), H).
+init_map(L, N, [H|T]) :-
+	msw_init(prior_color(0, L), H),
+	L1 is L + 1,
+	init_map(L1, N, T).
+
+world_part(Time1, Time1, L, L, M, M).
+world_part(Time1, Time2, L1, L2, M1, M2) :-
+	Time1 < Time2,
+	action(Time1, A),
+	noisy_move(Time1, A, L1, LNext),
+	TimeNext is Time1 + 1,
+	obs(TimeNext, Color),
+	obs_color(TimeNext, LNext, Color),
+	update_map(LNext, M1, Color, MNext),
+	world_part(TimeNext, Time2, LNext, L2, MNext, M2).
+
+noisy_move(Time, left, L1, L2) :-
+	valid_loc(L1),
+	(L1 = 1 ->
+	   L2 = L1
+	;
+	   msw_trans(wheelslip(Time, L1), Slip),
+	   (Slip = no ->
+	      L2 is L1 - 1
+	   ;
+	      L2 = L1
+	   )
+	).
+noisy_move(Time, right, L1, L2) :-
+	valid_loc(L1),
+	numcells(N),
+	(L1 = N ->
+	   L2 = L1
+	;
+	   msw_trans(wheelslip(Time, L1), Slip),
+	   (Slip = no ->
+	      L2 is L1 + 1,
+	    ;
+	      L2 = L1
+	   )
+	).
+
+%% helper predicates
+valid_loc(L) :-
+	L >= 1,
+	numcells(N),
+	L =< N.
+
+true_color(L, white) :-
+	valid_loc(L),
+	odd(L).
+true_color(L, black) :-
+	valid_loc(L),
+	even(L).
+
+flip(white, black).
+flip(black, white).
+
+odd(N) :- 1 is mod(N, 2).
+even(N) :- 0 is mod(N, 2).
+
+update_map(Loc, Map, Color, NewMap) :-
+	L1 is Loc - 1,
+	split_list(L1, Map, Start, [_OldColor | Rest]),
+	append(Start, [Color|Rest], NewMap).
+
+%% switch definitions
+values(prior_loc(_), [1,2,3,4,5,6,7,8,9,10]).
+set_sw(prior_loc(_), [1,0,0,0,0,0,0,0,0,0]).
+
+values(prior_color(_,_), [white, black]).
+set_sw(prior_color(_,_), [0.5, 0.5]).
+
+values(color_noise(_,_), [yes, no]).
+set_sw(color_noise(_,_), [0.1, 0.9]).
+
+values(wheelslip(_,_), [yes, no]).
+set_sw(wheelslip(_,_), [0.1, 0.9]).

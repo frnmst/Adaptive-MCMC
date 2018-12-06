@@ -1,0 +1,17 @@
+reach(X, X).
+reach(X, Y) :- edge(X, Z), reach(Z, Y).
+
+edge(X, Y) :- edge1(X, Y), msw(coin(X, Y), heads).
+
+edge1(1, 2).
+edge1(2, 3).
+edge1(3, 4).
+edge1(1, 4).
+edge1(2, 4).
+
+values(_, [heads, tails]).
+set_sw(coin(1,2), [0.5, 0.5]).
+set_sw(coin(2,3), [0.5, 0.5]).
+set_sw(coin(3,4), [0.5, 0.5]).
+set_sw(coin(1,4), [0.5, 0.5]).
+set_sw(coin(2,4), [0.5, 0.5]).

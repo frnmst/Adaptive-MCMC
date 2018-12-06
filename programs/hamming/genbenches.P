@@ -1,0 +1,101 @@
+
+gencode(I,L) :- 
+	(I > 0
+	->
+	 L = [P1, P2, D1, P3, D2, D3, D4|CRest],
+	 genbits(I,4,J,[D1,D2,D3,D4]),
+	 P1 is (D1 + D2 + D4) mod 2,
+	 P2 is (D1 + D3 + D4) mod 2,
+	 P3 is (D2 + D3 + D4) mod 2,
+	 gencode(J, CRest)
+	;  L=[]
+	).
+
+genbits(I, N, J, Bits) :-
+	(N=0
+	->  J = I, Bits = []
+	;   N1 is N - 1,
+	    msw(bit(I), B),
+	    Bits = [B|Rest],
+	    I1 is I-1,
+	    genbits(I1, N1, J, Rest)
+	).
+
+msw(_, B) :-
+	random:random(X),
+	(X < 0.5
+	-> B=0
+	;  B=1
+	).
+
+evidence(Size, Num, Q, Evid) :-
+	% generate a code of given Size,
+	% with Num = number of evidence variables
+	% randomly select Q as a non-evidence variable.
+	DataLen is Size*4,
+	CodeLen is Size*7,
+	basics:length(Evid, CodeLen),
+	gencode(DataLen, Code),
+	generate_evidence(Num, Q, CodeLen, Code, Evid).
+
+generate_evidence(I, Q, N, Code, Evid) :-
+	I>0, !,
+	probe_and_select(N, Code, Evid),
+	I1 is I-1,
+	generate_evidence(I1, Q, N, Code, Evid).
+generate_evidence(0, Q, N, _Code, Evid) :-
+	probe(N, Evid, I),
+	basics:ith(I, Evid, Q).
+
+probe(N, S, I) :-
+	random:random(X),
+	Y is floor(X*N) + 1,
+	basics:ith(Y, S, V),
+	(var(V)
+	-> I=Y
+	;  probe(N, S, I) % probe again
+	).
+
+probe_and_select(N, Code, Evid) :-
+	probe(N, Evid, I),
+	basics:ith(I, Evid, X),
+	basics:ith(I, Code, V),
+	X=V.
+
+genquery(Size, Num, Query, Evidence):-
+	evidence(Size, Num, Q, E),
+	copy_term(E, Evidence),
+	Q=1,
+	Query=E.
+
+genbench :-
+	benchparams(Size, Num, Repeat),
+	genbench(Size, Num, Repeat),
+	fail; true.
+
+genbench(Size, Num, Repeat) :-
+	Repeat > 0, !,
+	R is Repeat-1,
+	genquery(Size, Num, Q, E),
+	assert(bench(Size, Num, Repeat, Q, E)),
+	genbench(Size, Num, R).
+genbench(_, _, 0).
+
+
+%benchparams(4, 8, 4).
+%benchparams(4, 12, 4).
+%benchparams(4, 16, 4).
+%benchparams(4, 20, 4).
+%benchparams(4, 24, 4).
+
+benchparams(8, 16, 4).
+benchparams(8, 24, 4).
+benchparams(8, 32, 4).
+benchparams(8, 40, 4).
+benchparams(8, 48, 4).
+
+benchparams(16, 32, 4).
+benchparams(16, 48, 4).
+benchparams(16, 64, 4).
+benchparams(16, 80, 4).
+benchparams(16, 96, 4).

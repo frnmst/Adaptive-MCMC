@@ -1,0 +1,29 @@
+% DBN used in "A Simple Tutorial on Rao-Blackwellised Particle Filtering for
+% Dynamic Bayesian Networks"
+
+% http://www.cs.ubc.ca/~nando/software.html
+
+% Parameters corresponding to the two versions of the DBN are defined in
+% dbn1params.P and dbn1noisyparams.P
+
+% Sample observation sequences and the exact filtered distributions are defined
+% in noisy and notnoisy folders
+
+dbn([A, B, C], Time) :-
+	msw_init(a0, A0),
+	msw_init(b0, B0),
+	msw_init(c0, C0),
+	dbn_part(0, Time, [A0, B0, C0], [A, B, C]).
+
+dbn_part(Time1, Time1, State1, State1).
+dbn_part(Time1, Time2, [A1, B1, C1], [A2, B2, C2]) :-
+	Time1 < Time2,
+	msw_trans(at(B1, A1, Time1), ANext),
+	msw_trans(bt(B1, Time1), BNext),
+	msw_trans(ct(B1, C1, Time1), CNext),
+	TimeNext is Time1 + 1,
+	obs(TimeNext, [OA, OB, OC]),
+	msw_obs(ao(ANext, TimeNext), OA),
+	msw_obs(bo(BNext, TimeNext), OB),
+	msw_obs(co(CNext, TimeNext), OC),
+	dbn_part(TimeNext, Time2, [ANext, BNext, CNext], [A2, B2, C2]).

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<smile version="1.0" id="Network2" numsamples="1000" discsamples="10000">
+	<nodes>
+		<cpt id="x11">
+			<state id="t" />
+			<state id="f" />
+			<probabilities>0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="x12">
+			<state id="t" />
+			<state id="f" />
+			<parents>x11</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_2_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>x12</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_3_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_2_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_4_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_3_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_5_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_4_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_6_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>x11</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_7_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>x12 Copy_6_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_8_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_2_of_Node5 Copy_7_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_9_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_3_of_Node5 Copy_8_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_10_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_4_of_Node5 Copy_9_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_11_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_5_of_Node5 Copy_10_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_12_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_6_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_13_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_7_of_Node5 Copy_12_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_14_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_8_of_Node5 Copy_13_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_15_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_9_of_Node5 Copy_14_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_16_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_10_of_Node5 Copy_15_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_17_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_11_of_Node5 Copy_16_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_18_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_12_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_19_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_13_of_Node5 Copy_18_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_20_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_14_of_Node5 Copy_19_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_21_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_15_of_Node5 Copy_20_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_22_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_16_of_Node5 Copy_21_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_23_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_17_of_Node5 Copy_22_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_35_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_18_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_34_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_19_of_Node5 Copy_35_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_33_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_20_of_Node5 Copy_34_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_32_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_21_of_Node5 Copy_33_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_31_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_22_of_Node5 Copy_32_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_30_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_23_of_Node5 Copy_31_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_29_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_35_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_28_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_34_of_Node5 Copy_29_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_27_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_33_of_Node5 Copy_28_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_26_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_32_of_Node5 Copy_27_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_25_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_31_of_Node5 Copy_26_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+		<cpt id="Copy_24_of_Node5">
+			<state id="t" />
+			<state id="f" />
+			<parents>Copy_30_of_Node5 Copy_25_of_Node5</parents>
+			<probabilities>0.01 0.99 0.01 0.99 0.01 0.99 0.01 0.99</probabilities>
+		</cpt>
+	</nodes>
+	<extensions>
+		<genie version="1.0" app="GeNIe 2.0.4843.0" name="6x6grid" faultnameformat="nodestate">
+			<node id="x11">
+				<name>x11</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>173 108 221 138</position>
+			</node>
+			<node id="x12">
+				<name>x12</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>258 111 306 141</position>
+			</node>
+			<node id="Copy_2_of_Node5">
+				<name>x13</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>328 110 376 140</position>
+			</node>
+			<node id="Copy_3_of_Node5">
+				<name>x14</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>410 111 458 141</position>
+			</node>
+			<node id="Copy_4_of_Node5">
+				<name>x15</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>502 112 550 142</position>
+			</node>
+			<node id="Copy_5_of_Node5">
+				<name>x16</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>604 109 652 139</position>
+			</node>
+			<node id="Copy_6_of_Node5">
+				<name>x21</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>178 170 226 200</position>
+			</node>
+			<node id="Copy_7_of_Node5">
+				<name>x22</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>272 172 320 202</position>
+			</node>
+			<node id="Copy_8_of_Node5">
+				<name>x23</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>336 175 384 205</position>
+			</node>
+			<node id="Copy_9_of_Node5">
+				<name>x24</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>415 169 463 199</position>
+			</node>
+			<node id="Copy_10_of_Node5">
+				<name>x25</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>499 170 547 200</position>
+			</node>
+			<node id="Copy_11_of_Node5">
+				<name>x26</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>610 172 658 202</position>
+			</node>
+			<node id="Copy_12_of_Node5">
+				<name>x31</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>176 240 224 270</position>
+			</node>
+			<node id="Copy_13_of_Node5">
+				<name>x32</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>267 243 315 273</position>
+			</node>
+			<node id="Copy_14_of_Node5">
+				<name>x33</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>350 247 398 277</position>
+			</node>
+			<node id="Copy_15_of_Node5">
+				<name>x34</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>428 248 476 278</position>
+			</node>
+			<node id="Copy_16_of_Node5">
+				<name>x35</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>516 246 564 276</position>
+			</node>
+			<node id="Copy_17_of_Node5">
+				<name>x36</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>616 247 664 277</position>
+			</node>
+			<node id="Copy_18_of_Node5">
+				<name>x41</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>183 310 231 340</position>
+			</node>
+			<node id="Copy_19_of_Node5">
+				<name>x42</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>266 316 314 346</position>
+			</node>
+			<node id="Copy_20_of_Node5">
+				<name>x43</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>348 318 396 348</position>
+			</node>
+			<node id="Copy_21_of_Node5">
+				<name>x44</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>432 321 480 351</position>
+			</node>
+			<node id="Copy_22_of_Node5">
+				<name>x45</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>518 317 566 347</position>
+			</node>
+			<node id="Copy_23_of_Node5">
+				<name>x46</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>623 317 671 347</position>
+			</node>
+			<node id="Copy_24_of_Node5">
+				<name>x66</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>632 448 680 478</position>
+			</node>
+			<node id="Copy_25_of_Node5">
+				<name>x65</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>537 447 585 477</position>
+			</node>
+			<node id="Copy_26_of_Node5">
+				<name>x64</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>449 444 497 474</position>
+			</node>
+			<node id="Copy_27_of_Node5">
+				<name>x63</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>370 446 418 476</position>
+			</node>
+			<node id="Copy_28_of_Node5">
+				<name>x62</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>286 439 334 469</position>
+			</node>
+			<node id="Copy_29_of_Node5">
+				<name>x61</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>190 440 238 470</position>
+			</node>
+			<node id="Copy_30_of_Node5">
+				<name>x56</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>630 380 678 410</position>
+			</node>
+			<node id="Copy_31_of_Node5">
+				<name>x55</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>524 382 572 412</position>
+			</node>
+			<node id="Copy_32_of_Node5">
+				<name>x54</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>438 378 486 408</position>
+			</node>
+			<node id="Copy_33_of_Node5">
+				<name>x53</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>359 376 407 406</position>
+			</node>
+			<node id="Copy_34_of_Node5">
+				<name>x52</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>277 375 325 405</position>
+			</node>
+			<node id="Copy_35_of_Node5">
+				<name>x51</name>
+				<interior color="e5f6f7" />
+				<outline color="000080" />
+				<font color="000000" name="Arial" size="8" />
+				<position>187 372 235 402</position>
+			</node>
+		</genie>
+	</extensions>
+</smile>

@@ -1,0 +1,103 @@
+% DBN used in "A Simple Tutorial on Rao-Blackwellised Particle Filtering for
+% Dynamic Bayesian Networks"
+
+% http://www.cs.ubc.ca/~nando/software.html
+
+% Parameters corresponding to the two versions of the DBN are defined in
+% dbn1params.P and dbn1noisyparams.P
+
+% Sample observation sequences and the exact filtered distributions are defined
+% in noisy and notnoisy folders
+
+%% This is same as dbn1.P except this is used for testing the implementation of
+%% particle filter algorithm. It basically computes the error and writes it to a
+%% csv file which is then compared to the errors produced by Matlab code.
+
+:- import pfilter_numparticles/1, pfilter_resampleparticles/2 from pfilter.
+:- import mklist/2, length/2, intersect/3 from lists.
+
+dbn([A, B, C], Time) :-
+	msw_init(a0, A0),
+	msw_init(b0, B0),
+	msw_init(c0, C0),
+	save_filtd(0, A0, B0, C0), %% testing
+	dbn_part(0, Time, [A0, B0, C0], [A, B, C]),
+	open('errors.csv', append, S), %% testing
+	compute_error(Time, 0, E), %% testing
+	E1 is E/Time, %% testing
+	write(S, E1), %% testing
+	close(S). %% testing
+
+dbn_part(Time1, Time1, State1, State1).
+dbn_part(Time1, Time2, [A1, B1, C1], [A2, B2, C2]) :-
+	Time1 < Time2,
+	msw_trans(at(B1, A1, Time1), ANext),
+	msw_trans(bt(B1, Time1), BNext),
+	msw_trans(ct(B1, C1, Time1), CNext),
+	TimeNext is Time1 + 1,
+	obs(TimeNext, [OA, OB, OC]),
+	msw_obs(ao(ANext, TimeNext), OA),
+	msw_obs(bo(BNext, TimeNext), OB),
+	msw_obs(co(CNext, TimeNext), OC),
+	save_filtd(TimeNext, ANext, BNext, CNext), %% testing
+	dbn_part(TimeNext, Time2, [ANext, BNext, CNext], [A2, B2, C2]).
+
+%% testing
+save_filtd(Time, A, B, C) :-
+	original_form([A,B,C], P),
+	pfilter_numparticles(N),
+	mklist(N, P1),
+	pfilter_resampleparticles(P, P1),
+	intersect(P1, [[0,0,0]], L0),
+	intersect(P1, [[0,0,1]], L1),
+	intersect(P1, [[0,1,0]], L2),
+	intersect(P1, [[0,1,1]], L3),
+	intersect(P1, [[1,0,0]], L4),
+	intersect(P1, [[1,0,1]], L5),
+	intersect(P1, [[1,1,0]], L6),
+	intersect(P1, [[1,1,1]], L7),
+	length(L0, N0),
+	length(L1, N1),
+	length(L2, N2),
+	length(L3, N3),
+	length(L4, N4),
+	length(L5, N5),
+	length(L6, N6),
+	length(L7, N7),
+	Pr0 is N0 / N,
+	Pr1 is N1 / N,
+	Pr2 is N2 / N,
+	Pr3 is N3 / N,
+	Pr4 is N4 / N,
+	Pr5 is N5 / N,
+	Pr6 is N6 / N,
+	Pr7 is N7 / N,
+	retractall(filt_dist(Time, _)),
+	assert(filt_dist(Time, [Pr0,Pr1,Pr2,Pr3,Pr4,Pr5,Pr6,Pr7])),
+	%writeln([Pr0,Pr1,Pr2,Pr3,Pr4,Pr5,Pr6,Pr7]),
+	true.
+
+compute_error(0, In, Out) :-
+	filt_dist(0, FD),
+	exact_dist(0, ED),
+	abs_diff(FD, ED, E),
+	Out is In + E.
+
+compute_error(Time, In, Out) :-
+	filt_dist(Time, FD),
+	exact_dist(Time, ED),
+	abs_diff(FD, ED, E),
+	In1 is In + E,
+	Time1 is Time - 1,
+	compute_error(Time1, In1, Out).
+
+abs_diff([], [], 0).
+abs_diff([FH|FT], [EH|ET], E) :-
+	E1 is FH - EH,
+	(E1 < 0 ->
+	 E2 is E1 * -1
+	;
+	 E2 = E1
+	),
+	abs_diff(FT, ET, E3),
+	E is E3 + E2.

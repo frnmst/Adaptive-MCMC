@@ -1,0 +1,23 @@
+same_birthday :-
+    person(P1),
+    person(P2),
+    P1 \= P2,
+    msw(b(P1), D),
+    msw(b(P2), D).
+
+person(1).
+person(2).
+person(3).
+person(4).
+person(5).
+person(6).
+person(7).
+person(8).
+person(9).
+person(10).
+person(11).
+person(12).
+person(13).
+
+%% set_params :-
+set_sw(b(_), uniform(365,1,365)).

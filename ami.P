@@ -1,0 +1,377 @@
+%% Meta-Interpreter for MCMC
+
+:- import length/2, nth/3, member/2, reverse/2 from lists.
+:- import prepare/1, gennum/1 from gensym.
+:- import init_mcmc_distributions/2, init_mcmc_state/3, init_mcmc_result/1,
+   	  mcmc_accept/0, mcmc_collectdata/1, mcmc_initproposed/0, 
+	  mcmc_selectandresample/1, mcmc_countpos/1, mcmc_sample/3, 
+ 	  mcmc_acceptreject/1, mcmc_reject/0, mcmc_probability/1, 
+	  mcmc_rejections/1, mcmc_terminate/0, mcmc_printdebug/1, 
+	  mcmc_printstate/0, mcmc_printstats/0, mcmc_adaptive/1,
+	  mcmc_resampling/1, mcmc_resampleprob/1 from amcmc.
+
+:- dynamic pid2process/2.
+
+default_burn_in(1000).
+default_sample_size(10000).
+
+% compute unconditional probability of query
+% +Query: ground atom
+% -Probability: probability of 'Query'
+prob(Query, Probability) :-
+    default_burn_in(Burn_In),
+    default_sample_size(Sample_Size),
+    cond_sprob(Query, true, Burn_In, Sample_Size, Probability).
+
+% compute unconditional probability of query
+% +Query: ground atom
+% +Burn_In: burn in duration of markov chain
+% +Sample_Size: #samples to be generated
+% -Probability: probability of 'Query'
+prob(Query, Burn_In, Sample_Size, Probability) :-
+	cond_sprob(Query, true, Burn_In, Sample_Size, Probability).
+
+% compute conditional probability of query given evidence
+% +Query: ground atom
+% +Evidence: ground atom
+% -Probability: P(Query | Evidence)
+cond_prob(Query, Evidence, Probability) :-
+    default_burn_in(Burn_In),
+    default_sample_size(Sample_Size),
+    cond_sprob(Query, Evidence, Burn_In, Sample_Size, Probability).
+
+% compute conditional probability of query given evidence
+% +Query: ground atom
+% +Evidence: ground atom
+% +Burn_In: burn in duration of markov chain
+% +Sample_Size: #samples to be generated
+% -Probability: P(Query | Evidence)
+cond_prob(Query, Evidence, Burn_In, Sample_Size, Probability) :-
+	cond_sprob(Query, Evidence, Burn_In, Sample_Size, Probability).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%  compute the conditional probability of 'Query' given 'Evidence' by using
+%  a Markov chain with the specified parameters.
+cond_sprob(Query, Evidence, Burn_In, Sample_Size, Probability) :-
+	init_sampler(Query, Evidence),
+	mcmc_collectdata(0),
+	burn_in(Query, Evidence, Burn_In),
+	mcmc_collectdata(1),
+	get_samples(Query, Evidence, Sample_Size),
+	mcmc_probability(Probability),
+	mcmc_terminate.
+
+%  initialize the Markov chain 
+init_sampler(Query, Evidence) :-
+	% generate ids for randprocs and pass their dists to mcmc module
+	findall(P, set_sw(P, _), PL),
+	prepare(0), % prepare gensym to generate integers from 1
+	dist_ids(PL, PIDL),
+	prepare(0), % reset gensym so that we generate ids for other uses 
+	distribution_list(PL, DL),
+	init_mcmc_distributions(PIDL, DL),
+	(search(Evidence, [], World1) ->
+	     % initialize the state of MCMC module
+	     reverse(World1, World),
+	     procid_representation(World, PIDL1, DIDL, OL),
+	     init_mcmc_state(PIDL1, DIDL, OL),
+	     (Query ->
+		  init_mcmc_result(1) % pass
+	     ;
+	          init_mcmc_result(0) % fail
+	     ),
+	     mcmc_accept
+	;
+	     writeln('init_sampler cannot find a consistent world'),
+	     fail
+	).
+
+%  construct the list of distributions corresponding to random procs
+distribution_list([], []).
+distribution_list([H|T], [DH|DT]) :-
+	set_sw(H, DH),
+	distribution_list(T, DT).
+
+dist_ids([], []).
+dist_ids([H|T], [HID|TID]) :-
+	distid(H, HID),
+	dist_ids(T, TID).
+
+:- table distid/2 as subsumptive.
+% generate unique identifiers for distributions
+distid(_P, N) :-
+	gennum(N1),
+	N is N1 - 1. % because C counts from 0
+
+:- table proc2dist/2.
+% map process ids to distribution ids
+proc2dist(P, D) :-
+	distid(P, D).
+
+:- table procid/2.
+%  generate unique identifier for random process
+procid(P, N) :-
+	gennum(N1),
+	N is N1 - 1, % because C counts from 0
+	assert(pid2process(N, P)).
+
+%  represent the state using procids and outcome indices
+procid_representation([], [], [], []).
+procid_representation([P=O|T], [PID|PIDT], [DID|DIDT], [ON|ONT]) :-
+	procid(P, PID),
+	proc2dist(P, DID),
+	values(P, V),
+	nth(N, V, O),
+	ON is N-1, % because C counts from 0
+	procid_representation(T, PIDT, DIDT, ONT).
+
+%  systematically search for a world consistent with evidence
+%  do this by extending the input world 'In' to world 'Out'
+search(true, In, In).
+search((A, B), In, Out) :-
+	search(A, In, Out1),
+	search(B, Out1, Out).
+search((G1 -> G2 ; G3), In, Out) :-
+	(search(G1, In, Out1) ->
+	     search(G2, Out1, Out)
+	;
+	     search(G3, In, Out)
+	).
+search(msw(Process, Outcome), In, Out) :-
+	(member(Process=Old_Outcome, In) ->
+	     % if an outcome was already selected - use it
+	     Outcome = Old_Outcome,
+	     Out = In
+	;
+	     % try out various outcomes of the random process
+	     values(Process, Values),
+	     member(Value, Values),
+	     % check that the outcome has non-zero probability
+	     nonzero_outcome(Process, Value),
+	     Outcome = Value,
+	     Out = [Process=Value|In]
+	).
+search(G, In, Out) :-
+	G \= true,
+	G \= (_, _),
+	G \= (_ -> _; _),
+	G \= msw(_, _),
+	(predicate_property(G, built_in) ->
+	     call(G),
+	     Out = In
+	 ;
+	     clause(G, B),
+	     search(B, In, Out)
+	).
+
+%  perform Markov chain burn-in
+burn_in(_, _, 0).
+burn_in(Query, Evidence, Burn_In) :-
+	Burn_In > 0,
+	Burn_In1 is Burn_In - 1,
+	mcmc_transition(Query, Evidence), !,
+	burn_in(Query, Evidence, Burn_In1).
+
+%  single transition of the Markov chain
+mcmc_transition(Query, Evidence) :-
+	% init proposed world
+	mcmc_initproposed,
+	% select and resample a random process
+	mcmc_selectandresample(Loop),
+	(Loop = 1 ->
+	     % if resampling results in same outcome
+	     % we can reuse old state to update counts
+	     true
+	;
+	     % try to sample a world consistent with evidence
+	     mcmc_countpos(1),
+	     (Evidence ->
+	          mcmc_countpos(0),
+	          % we have a world consistent with evidence
+	          (Query ->
+		       mcmc_acceptreject(1) % pass
+	          ;
+	               mcmc_acceptreject(0) % fail
+	          )
+	     ;
+	          mcmc_countpos(0),
+	          mcmc_reject
+	     )
+	).
+
+%  get samples from the Markov chain
+get_samples(_, _, 0).
+get_samples(Query, Evidence, Sample_Size) :-
+	Sample_Size > 0,
+	Sample_Size1 is Sample_Size - 1,
+	mcmc_transition(Query, Evidence), !,
+	get_samples(Query, Evidence, Sample_Size1).
+
+msw(Process, Outcome) :-
+	procid(Process, PID),
+	proc2dist(Process, DID),
+	mcmc_sample(PID, DID, N),
+	N1 is N + 1, % because C counts from 0
+	values(Process, Values),
+	nth(N1, Values, Outcome).
+
+% whether adaptation should be done(1) or not(0).
+adaptation(on) :- mcmc_adaptive(1).
+adaptation(off) :- mcmc_adaptive(0).
+
+% whether Singleswitch(1) or Multiswitch(0) style resampling to be done
+resampling_style(singleswitch) :- mcmc_resampling(1).
+resampling_style(multiswitch(X)) :- mcmc_resampling(0), mcmc_resampleprob(X).
+
+% print info for debugging (should be called before mcmc_terminate)
+printdebug :-
+	writeln('pid| process| samplecount| qvalues| adist| acmdist'),
+	printdebug1.
+
+printdebug1 :-
+	pid2process(N,P),
+	write(N),write('| '),write(P),write('| '),
+	mcmc_printdebug(N),
+	fail.
+
+printdebug1.
+
+printdebug(P) :-
+	writeln('pid| process| samplecount| qvalues| adist| acmdist'),
+	pid2process(N,P),
+	write(N),write('| '),write(P),write('| '),
+	mcmc_printdebug(N).
+
+% load the source file(s) of PRISM programs
+load_files([]).
+load_files([H|T]) :-
+	load_dyn(H),
+	load_files(T).
+
+
+%  nonzero_outcome/2 - check that the outcome has non-zero probability
+nonzero_outcome(Process, Value) :-
+	set_sw(Process, Dist),
+	values(Process, Values),
+	nth(N, Values, Value),
+	nth(N, Dist, P),
+	P > 0.
+
+% write_stats/7 - collect statistics and write to file
+write_stats(Query, Evidence, BurnIn, SampleSize, NumIntervals, NumExperiments,
+	    File) :-
+	statistics(Query, Evidence, BurnIn, SampleSize, NumIntervals,
+		   NumExperiments, PMeans, PVars, TMeans, RMeans),
+	create_list1(1, NumIntervals, SampleSize, Sizes),
+	open(File, write, Stream),
+	write_lists(Stream, Sizes, PMeans, PVars, TMeans, RMeans).
+
+% write_lists/5 - write the lists to the file.
+write_lists(ST, [], [], [], [], []) :- close(ST).
+write_lists(ST, [S|SR], [P|PR], [V|VR], [T|TR], [R|RR]) :-
+	write(ST,S),write(ST,','),
+	write(ST,P),write(ST,','),
+	write(ST,V),write(ST,','),
+	write(ST,T),write(ST,','),
+	writeln(ST, R),
+	write_lists(ST, SR, PR, VR, TR, RR).
+
+% statistics/10 - collect statisitcs
+statistics(Query, Evidence, BurnIn, SampleSize, NumIntervals,
+	   NumExperiments, PMeans, PVars, TMeans, RMeans) :-
+	collect_data(Query, Evidence, BurnIn, SampleSize, NumIntervals,
+		     NumExperiments, PMatrix, TMatrix, RMatrix),
+	compute_means(PMatrix, PMeans),
+	compute_vars(PMatrix, PVars),
+	compute_means(TMatrix, TMeans),
+	compute_means(RMatrix, RMeans).
+
+collect_data(_, _, _, _, _, 0, [], [], []).
+collect_data(Query, Evidence, BurnIn, SampleSize, NumIntervals, NumExperiments,
+	     [PList|PMRest], [TList|TMRest], [RList|RMRest]) :-
+	NumExperiments > 0,
+	write('Experiment '), writeln(NumExperiments),
+	NumExperiments1 is NumExperiments - 1,
+	cputime(T1),
+	init_sampler(Query, Evidence),
+	mcmc_collectdata(0),
+	burn_in(Query, Evidence, BurnIn),
+	mcmc_collectdata(1),
+	get_interval_samples(Query, Evidence, SampleSize, NumIntervals,
+			     T1, PList, TList, RList),
+	mcmc_terminate,
+	collect_data(Query, Evidence, BurnIn, SampleSize, NumIntervals,
+		     NumExperiments1, PMRest, TMRest, RMRest).
+
+get_interval_samples(_, _, _, 0, _, [], [], []).
+get_interval_samples(Query, Evidence, SampleSize, NumIntervals,
+		     T1, [Prob|PRest], [Time|TRest], [Rejections|RRest]) :-
+	NumIntervals > 0,
+	NumIntervals1 is NumIntervals - 1,
+	get_samples(Query, Evidence, SampleSize),
+	cputime(T2),
+	mcmc_probability(Prob),
+	Time is T2 - T1,
+	mcmc_rejections(Rejections),
+	get_interval_samples(Query, Evidence, SampleSize, NumIntervals1,
+			     T1, PRest, TRest, RRest).
+
+compute_means(Matrix, Means) :-
+	length(Matrix, L),
+	L > 0,
+	Matrix = [H|_],
+	length(H, RL),
+	create_list(RL, 0, Z),
+	sumrows(Matrix, Z, List),
+	listdiv(List, L, Means).
+
+sumrows([], In, In).
+sumrows([H|R], In, Out) :-
+	sum2lists(H, In, Temp),
+	sumrows(R, Temp, Out).
+
+sum2lists([], [], []).
+sum2lists([H1|R1], [H2|R2], [S|SR]) :-
+	S is H1 + H2,
+	sum2lists(R1, R2, SR).
+
+listdiv([], _, []).
+listdiv([H|R], D, [M|MR]) :-
+	M is H/D,
+	listdiv(R, D, MR).
+
+compute_vars(Matrix, Vars) :-
+	length(Matrix, L),
+	L > 0,
+	Matrix = [H|_],
+	length(H, RL),
+	create_list(RL, 0, Z),
+	compute_means(Matrix, Means),
+	compute_sqdifs(Matrix, Means, SqDifs),
+	sumrows(SqDifs, Z, SumSqDifs),
+	listdiv(SumSqDifs, L, Vars).
+
+compute_sqdifs([], _, []).
+compute_sqdifs([H|R], M, [D|DR]) :-
+	sqdif2lists(H, M, D),
+	compute_sqdifs(R, M, DR).
+
+sqdif2lists([], [], []).
+sqdif2lists([H|R], [M|MR], [D|DR]) :-
+	D is (H-M)*(H-M),
+	sqdif2lists(R, MR, DR).
+
+create_list(0, _, []).
+create_list(N, E, [E|R]) :-
+	N > 0,
+	N1 is N-1,
+	create_list(N1, E, R).
+
+create_list1(M, M, S, [V]) :-
+	V is M*S.
+create_list1(N, M, S, [H|R]) :-
+	N < M,
+	H is N * S,
+	N1 is N + 1,
+	create_list1(N1, M, S, R).

@@ -1,0 +1,31 @@
+reach(X, X).
+reach(X, Y) :- edge(X, Y).
+reach(X, Y) :- edge(X, Z), reach(Z, Y).
+edge(X, Y) :- edge1(X, Y), msw(coin(X, Y), heads).
+values(coin(_, _), [heads, tails]).
+edge1(1, 2).
+set_sw(coin(1, 2), [0.5, 0.5]).
+edge1(2, 3).
+set_sw(coin(2, 3), [0.5, 0.5]).
+edge1(3, 4).
+set_sw(coin(3, 4), [0.5, 0.5]).
+edge1(4, 5).
+set_sw(coin(4, 5), [0.5, 0.5]).
+edge1(5, 6).
+set_sw(coin(5, 6), [0.5, 0.5]).
+edge1(6, 7).
+set_sw(coin(6, 7), [0.5, 0.5]).
+edge1(7, 8).
+set_sw(coin(7, 8), [0.5, 0.5]).
+edge1(8, 9).
+set_sw(coin(8, 9), [0.5, 0.5]).
+edge1(9, 10).
+set_sw(coin(9, 10), [0.5, 0.5]).
+edge1(1, 10).
+set_sw(coin(1, 10), [0.5, 0.5]).
+edge1(2, 4).
+set_sw(coin(2, 4), [0.5, 0.5]).
+edge1(5, 8).
+set_sw(coin(5, 8), [0.5, 0.5]).
+edge1(7, 10).
+set_sw(coin(7, 10), [0.5, 0.5]).

@@ -1,0 +1,93 @@
+reach(X, X).
+reach(X, Y) :- edge(X, Y).
+reach(X, Y) :- edge(X, Z), reach(Z, Y).
+edge(X, Y) :- edge1(X, Y), msw(coin(X, Y), heads).
+values(coin(_, _), [heads, tails]).
+edge1(1, 2).
+set_sw(coin(1, 2), [0.5, 0.5]).
+edge1(2, 3).
+set_sw(coin(2, 3), [0.5, 0.5]).
+edge1(3, 4).
+set_sw(coin(3, 4), [0.5, 0.5]).
+edge1(4, 5).
+set_sw(coin(4, 5), [0.5, 0.5]).
+edge1(5, 6).
+set_sw(coin(5, 6), [0.5, 0.5]).
+edge1(6, 7).
+set_sw(coin(6, 7), [0.5, 0.5]).
+edge1(7, 8).
+set_sw(coin(7, 8), [0.5, 0.5]).
+edge1(8, 9).
+set_sw(coin(8, 9), [0.5, 0.5]).
+edge1(9, 10).
+set_sw(coin(9, 10), [0.5, 0.5]).
+edge1(10, 11).
+set_sw(coin(10, 11), [0.5, 0.5]).
+edge1(11, 12).
+set_sw(coin(11, 12), [0.5, 0.5]).
+edge1(12, 13).
+set_sw(coin(12, 13), [0.5, 0.5]).
+edge1(13, 14).
+set_sw(coin(13, 14), [0.5, 0.5]).
+edge1(14, 15).
+set_sw(coin(14, 15), [0.5, 0.5]).
+edge1(15, 16).
+set_sw(coin(15, 16), [0.5, 0.5]).
+edge1(16, 17).
+set_sw(coin(16, 17), [0.5, 0.5]).
+edge1(17, 18).
+set_sw(coin(17, 18), [0.5, 0.5]).
+edge1(18, 19).
+set_sw(coin(18, 19), [0.5, 0.5]).
+edge1(19, 20).
+set_sw(coin(19, 20), [0.5, 0.5]).
+edge1(20, 21).
+set_sw(coin(20, 21), [0.5, 0.5]).
+edge1(21, 22).
+set_sw(coin(21, 22), [0.5, 0.5]).
+edge1(22, 23).
+set_sw(coin(22, 23), [0.5, 0.5]).
+edge1(23, 24).
+set_sw(coin(23, 24), [0.5, 0.5]).
+edge1(24, 25).
+set_sw(coin(24, 25), [0.5, 0.5]).
+edge1(25, 26).
+set_sw(coin(25, 26), [0.5, 0.5]).
+edge1(26, 27).
+set_sw(coin(26, 27), [0.5, 0.5]).
+edge1(27, 28).
+set_sw(coin(27, 28), [0.5, 0.5]).
+edge1(28, 29).
+set_sw(coin(28, 29), [0.5, 0.5]).
+edge1(29, 30).
+set_sw(coin(29, 30), [0.5, 0.5]).
+edge1(1, 30).
+set_sw(coin(1, 30), [0.5, 0.5]).
+edge1(1, 14).
+set_sw(coin(1, 14), [0.5, 0.5]).
+edge1(2, 15).
+set_sw(coin(2, 15), [0.5, 0.5]).
+edge1(3, 23).
+set_sw(coin(3, 23), [0.5, 0.5]).
+edge1(6, 18).
+set_sw(coin(6, 18), [0.5, 0.5]).
+edge1(7, 26).
+set_sw(coin(7, 26), [0.5, 0.5]).
+edge1(9, 24).
+set_sw(coin(9, 24), [0.5, 0.5]).
+edge1(10, 29).
+set_sw(coin(10, 29), [0.5, 0.5]).
+edge1(14, 17).
+set_sw(coin(14, 17), [0.5, 0.5]).
+edge1(16, 23).
+set_sw(coin(16, 23), [0.5, 0.5]).
+edge1(20, 23).
+set_sw(coin(20, 23), [0.5, 0.5]).
+edge1(21, 23).
+set_sw(coin(21, 23), [0.5, 0.5]).
+edge1(24, 26).
+set_sw(coin(24, 26), [0.5, 0.5]).
+edge1(25, 28).
+set_sw(coin(25, 28), [0.5, 0.5]).
+edge1(28, 30).
+set_sw(coin(28, 30), [0.5, 0.5]).

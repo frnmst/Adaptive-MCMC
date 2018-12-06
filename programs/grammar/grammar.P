@@ -1,0 +1,62 @@
+%:- table s/4.
+s(1, N, I, I, 0) :- I=<N.
+s(2, N, I, J, M) :- I<N,
+	char_at(I, I1, a), s(N, I1, J1, M1), J1<N, char_at(J1, J2, b), s(N, J2, J, M2),
+	M is max(M1+1, M2).
+
+s(N, I, J, M) :-
+	pick_clause(C, [1,2]),
+	s(C, N, I, J, M).
+
+pick_clause(C, L) :-
+	member(C, L).
+	%basics:member(C, L).
+
+char_at(I, I1, C) :-
+	msw(c(I), X), X=C,
+%	(C=a; C=b),
+	I1 is I+1.
+
+values(c(_), [a,b]).
+set_sw(c(_), [0.5, 0.5]).
+
+% :- dynamic answer/2.
+
+% get_answer1(Call, Arg) :-
+% 	retractall(answer(Call, Ans)),
+% 	call(Call),
+% 	(answer(Call, Arg)
+% 	->  true
+% 	;   assert(answer(Call, Arg))
+% 	),
+% 	fail.
+% get_answer1(Call, Arg) :-
+% 	answer(Call, Arg).
+
+% get_answer(Call, Arg) :-
+% 	call(Call).
+
+evidence(M) :-
+	(predicate_property(s(_,_,_,_), tabled)
+	->   abolish_table_pred(s(_,_,_,_))
+	;    true
+	),
+	s(M,0,M,_).
+query(M, K) :-
+	s(M,0,M,N),
+	N >= K.
+
+
+test(A,M) :-
+	adaptation(A),
+	resampling_style(multiswitch(0.05)),
+	writeln(multiswitch),
+	K is floor(sqrt(M)),
+	statistics(query(M,K), evidence(M), 1000, 10000, 10, 1, P, V, T, R),
+	writeln(P),
+	writeln(V),
+	writeln(T),
+	writeln(R).
+
+member(X,[X|_]).
+member(X,[Y|R]) :- X \= Y, member(X,R).

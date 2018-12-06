@@ -1,0 +1,15 @@
+% bayesian network corresponding to simple.P
+% with the conditional probabilities of a given B = t.
+values(_, [t,f]).
+set_sw(a, [0.33333, 0.66667]).
+% if deciamal point is not used below, foreign language interface
+% interprets it as an integer and converts to a wrong value
+set_sw(b(t), [1.0, 0.0]). 
+set_sw(b(f), [1.0, 0.0]).
+
+world(A, B) :-
+	msw(a, A),
+	msw(b(A), B).
+
+query(A) :- world(A, _).
+evidence(B) :- world(_, B).
