@@ -1,3 +1,7 @@
+/* Transform to ms as in SWI Prolog walltimes. */
+to_milliseconds([Head,Seconds|Tail],Milliseconds) :-
+    Milliseconds is Seconds * 1000.
+
 go1 :-
     consult('./ami'),
     load_files(['./programs/bnets/test33']),
@@ -5,4 +9,7 @@ go1 :-
     resampling_style(singleswitch),
     statistics(walltime,Before),
     cond_prob(t(query),t(evidence),100,100000000,P),
-    statistics(walltime,After).
+    statistics(walltime,After),
+    to_milliseconds(After,Time),
+    writeln(Time).
+
