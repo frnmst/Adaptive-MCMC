@@ -1,0 +1,8 @@
+go1 :-
+    consult('./ami'),
+    load_files(['./programs/bnets/test33']),
+    adaptation(on),
+    resampling_style(singleswitch),
+    statistics(walltime,Before),
+    cond_prob(t(query),t(evidence),100,100000000,P),
+    statistics(walltime,After).
