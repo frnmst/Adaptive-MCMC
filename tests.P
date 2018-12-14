@@ -24,6 +24,8 @@ to_milliseconds([Head,Seconds|Tail],Milliseconds) :-
     Milliseconds is Seconds * 1000.
 
 tests_single_test33(Min,Max,Step,Run_label,Adaptation,ResamplingStyle):-
+    consult('./ami'),
+    load_files(['./programs/bnets/test33']),
     writeln("performing test33.P on test33_cond_prob.csv\n"),
     open('test33_cond_prob.csv',append,Out_a),
     loop_test33_cond_prob(Min,Max,Step,Run_label,Adaptation,ResamplingStyle,Out_a),
@@ -44,8 +46,6 @@ loop_test33_cond_prob(Curr, Max, Step, Runs, Adaptation, ResamplingStyle, Out):-
     loop_test33_cond_prob(N,Max,Step,Runs,Adaptation,ResamplingStyle,Out).
 
 measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
-    consult('./ami'),
-    load_files(['./programs/bnets/test33']),
     adaptation(Adaptation),
     resampling_style(ResamplingStyle),
     statistics(walltime,Before),
@@ -56,8 +56,6 @@ measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
 
 
 measure_test66_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
-    consult('./ami'),
-    load_files(['./programs/bnets/test66']),
     adaptation(Adaptation),
     resampling_style(ResamplingStyle),
     statistics(walltime,Before),
