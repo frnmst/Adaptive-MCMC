@@ -1,6 +1,29 @@
+:- import format/2 from format.
+:- import format/3 from format.
+
 /* Transform to ms as in SWI Prolog walltimes. */
 to_milliseconds([Head,Seconds|Tail],Milliseconds) :-
     Milliseconds is Seconds * 1000.
+
+tests_single_test33(Min,Max,Step,Run_label,Adaptation,ResamplingStyle):-
+    writeln("performing test33.P on test33_cond_prob.csv\n"),
+    open('test33_cond_prob.csv',append,Out_a),
+    loop_test33_cond_prob(Min,Max,Step,Run_label,Adaptation,ResamplingStyle,Out_a),
+    close(Out_a).
+
+loop_test33_cond_prob(Curr,Max,_,_,_,_,_):-
+    Curr>Max,
+    !.
+
+loop_test33_cond_prob(Curr, Max, Step, Runs, Adaptation, ResamplingStyle, Out):-
+    Samples is Curr,
+    measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle),
+    format("run ~q, sample ~q of ~q\n", [Runs, Samples, Max]),
+    format(Out, "~q,~q,~q\n", [Runs, Samples, Time]),
+    flush_output(Out),
+    flush_output,
+    N is Curr+Step,
+    loop_test33_cond_prob(N,Max,Step,Runs,Adaptation,ResamplingStyle,Out).
 
 measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
     consult('./ami'),
@@ -12,6 +35,7 @@ measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
     statistics(walltime,After),
     to_milliseconds(After,Time),
     writeln(Time).
+
 
 measure_test66_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
     consult('./ami'),
