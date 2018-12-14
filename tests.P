@@ -2,14 +2,24 @@
 to_milliseconds([Head,Seconds|Tail],Milliseconds) :-
     Milliseconds is Seconds * 1000.
 
-go1 :-
+measure_test33_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
     consult('./ami'),
     load_files(['./programs/bnets/test33']),
-    adaptation(on),
-    resampling_style(singleswitch),
+    adaptation(Adaptation),
+    resampling_style(ResamplingStyle),
     statistics(walltime,Before),
-    cond_prob(t(query),t(evidence),100,100000000,P),
+    cond_prob(t(query),t(evidence),100,Samples,P),
     statistics(walltime,After),
     to_milliseconds(After,Time),
     writeln(Time).
 
+measure_test66_cond_prob(Time, Samples, Adaptation, ResamplingStyle) :-
+    consult('./ami'),
+    load_files(['./programs/bnets/test66']),
+    adaptation(Adaptation),
+    resampling_style(ResamplingStyle),
+    statistics(walltime,Before),
+    cond_prob(t(query),t(evidence),100,Samples,P),
+    statistics(walltime,After),
+    to_milliseconds(After,Time),
+    writeln(Time).

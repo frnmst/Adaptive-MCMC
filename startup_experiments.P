@@ -1,5 +1,5 @@
 :- go.
 go :-
     consult('tests.P'),
-    go1.
+    measure_test33_cond_prob(Time,10000,'on','singleswitch').
 
