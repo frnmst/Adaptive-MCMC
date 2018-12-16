@@ -5,6 +5,11 @@
   - tests.P: the experiments file.
   - startup_experiments.P: run experiments with the specified parameters.
 
+## Running 
+
+    $ xsb -e "compile('startup_experiments.P'),halt."
+    $ xsb startup_experiments
+
 ## Differences from SWI Prolog
 
 As far as I know:
