@@ -19,5 +19,5 @@
 :- go.
 go :-
     consult('tests.P'),
-    tests_single_test33(100,10000,100,1,'on','singleswitch').
+    tests_single_test33(100,10000,100,1,'singleswitch').
 

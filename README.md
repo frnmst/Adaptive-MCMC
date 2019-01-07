@@ -1,9 +1,11 @@
 # Adaptive-MCMC
 
 - original repository: https://github.com/arunwise/Adaptive-MCMC
+- direct comparision between the adaptive and non adaptive version of
+  the programs. These will be then compared with the mh and gibbs versions.
 - new files:
-  - tests.P: the experiments file.
-  - startup_experiments.P: run experiments with the specified parameters.
+  - `tests.P`: the experiments file.
+  - `startup_experiments.P`: run experiments with the specified parameters.
 
 ## Running 
 
