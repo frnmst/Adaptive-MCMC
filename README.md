@@ -1,27 +1,25 @@
 # Adaptive-MCMC
 
 - original repository: https://github.com/arunwise/Adaptive-MCMC
-- direct comparision between the adaptive and non adaptive version of
-  the programs. These will be then compared with the mh and gibbs versions.
-- new files:
-  - `tests.P`: the experiments file.
-  - `startup_experiments.P`: run experiments with the specified parameters.
 
-## Running 
+## Purpose
 
-    $ xsb -e "compile('startup_experiments.P'),halt."
-    $ xsb startup_experiments
+Direct comparision between the adaptive and non adaptive version of
+the programs. These will be then compared with the mh and gibbs versions.
 
-## Differences from SWI Prolog
+## New files
 
-As far as I know:
+- `tests.P`: another experiments file.
 
-- programs need to be compiled
-- no way to pass argc or argv arguments
+## Running
+
+Have a look at the 
+[mcmc-comparison](https://github.com/frnmst/mcmc-comparisons) repository.
 
 ## License
 
-Copyright 2018 Franco Masotti
+Copyright 2014-2018 Arun Nampally
+          2018-2019 Franco Masotti
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
