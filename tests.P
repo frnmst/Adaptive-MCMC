@@ -19,11 +19,26 @@
 :- import format/2 from format.
 :- import format/3 from format.
 
-/* Transform to ms as in SWI Prolog walltimes. */
-to_milliseconds([Head,Seconds|Tail],Milliseconds) :-
+/* Transform to ms like the SWI Prolog walltimes. */
+to_milliseconds([Head,Seconds|Tail], Milliseconds) :-
     Milliseconds is Seconds * 1000.
 
-tests_single_test33(Min,Max,Step,Run_label,Resampling_style):-
+/*
+tests_sequential_test33_cond_prob(_,_,_,Runs,_):-
+    Runs=<0,
+    !.
+
+tests_sequential_test33_cond_prob(Min,Max,Step,Runs,Resampling_style):-
+    tests_single_test33_cond_prob(Min,Max,Step,Runs,Resampling_style),
+    writeln('hi0'),
+    tests_single_test33_cond_prob(Min,Max,Step,Runs,Resampling_style),
+    writeln('hi'),
+    N is Runs-1,
+    writeln(N),
+    tests_sequential_test33_cond_prob(Min,Max,Step,N,Resampling_style).
+*/
+
+tests_single_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style):-
     consult('./ami'),
     load_files(['./programs/bnets/test33']),
     writeln("performing test33.P on test33_cond_prob.csv\n"),
@@ -38,7 +53,7 @@ loop_test33_cond_prob(Curr,Max,_,_,_,_):-
 loop_test33_cond_prob(Curr, Max, Step, Runs, Resampling_style, Out):-
     Samples is Curr,
     measure_test33_cond_prob(Time_adapt_on, Samples, 'on', Resampling_style, Prob_adapt_on),
-    measure_test33_cond_prob(Time_adapt_off, Samples, 'off', Resampling_style,  Prob_adapt_off),
+    measure_test33_cond_prob(Time_adapt_off, Samples, 'off', Resampling_style, Prob_adapt_off),
     format("run ~q, sample ~q of ~q\n", [Runs, Samples, Max]),
     format(Out, "~q,~q,~q,~q,~q,~q\n", [Runs, Samples, Time_adapt_on, Prob_adapt_on, Time_adapt_off, Prob_adapt_off]),
     flush_output(Out),
