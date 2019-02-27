@@ -23,34 +23,19 @@
 to_milliseconds([Head,Seconds|Tail], Milliseconds) :-
     Milliseconds is Seconds * 1000.
 
-/*
-tests_sequential_test33_cond_prob(_,_,_,Runs,_):-
-    Runs=<0,
-    !.
-
-tests_sequential_test33_cond_prob(Min,Max,Step,Runs,Resampling_style):-
-    tests_single_test33_cond_prob(Min,Max,Step,Runs,Resampling_style),
-    writeln('hi0'),
-    tests_single_test33_cond_prob(Min,Max,Step,Runs,Resampling_style),
-    writeln('hi'),
-    N is Runs-1,
-    writeln(N),
-    tests_sequential_test33_cond_prob(Min,Max,Step,N,Resampling_style).
-*/
-
-tests_single_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style):-
+tests_single_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
     consult('./ami'),
     load_files(['./programs/bnets/test33']),
     writeln("performing test33.P on test33_cond_prob.csv\n"),
     open('test33_cond_prob.csv',append,Out_a),
-    loop_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style,Out_a),
+    loop_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style,Resampling_probability,Out_a),
     close(Out_a).
 
-loop_test33_cond_prob(Curr,Max,_,_,_,_):-
+loop_test33_cond_prob(Curr,Max,_,_,_,_,_):-
     Curr>Max,
     !.
 
-loop_test33_cond_prob(Curr, Max, Step, Runs, Resampling_style, Out):-
+loop_test33_cond_prob(Curr, Max, Step, Runs, Resampling_style, Resampling_probability, Out):-
     Samples is Curr,
     measure_test33_cond_prob(Time_adapt_on, Samples, 'on', Resampling_style, Prob_adapt_on),
     measure_test33_cond_prob(Time_adapt_off, Samples, 'off', Resampling_style, Prob_adapt_off),
@@ -59,11 +44,11 @@ loop_test33_cond_prob(Curr, Max, Step, Runs, Resampling_style, Out):-
     flush_output(Out),
     flush_output,
     N is Curr+Step,
-    loop_test33_cond_prob(N,Max,Step,Runs,Resampling_style,Out).
+    loop_test33_cond_prob(N,Max,Step,Runs,Resampling_style,Resampling_probability,Out).
 
-measure_test33_cond_prob(Time, Samples, Adaptation, Resampling_style, Prob) :-
+measure_test33_cond_prob(Time, Samples, Adaptation, Resampling_style, Resampling_probability, Prob) :-
     adaptation(Adaptation),
-    resampling_style(Resampling_style),
+    resampling_style(multiswitch(Resampling_probability)),
     statistics(walltime,Before),
     cond_prob(t(query),t(evidence),100,Samples,Prob),
     statistics(walltime,After),
