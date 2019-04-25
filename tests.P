@@ -59,3 +59,41 @@ measure_test33_cond_prob(Time, Samples, Adaptation, Resampling_style, Resampling
     statistics(walltime,After),
     to_milliseconds(After,Time),
     writeln(Time).
+
+tests_single_arithm_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
+    consult('./ami'),
+    load_files(['./arithm']),
+    writeln("performing arithm.P on arithm_cond_prob.csv\n"),
+    open('arithm_cond_prob.csv',append,Out_a),
+    loop_arithm_cond_prob(Min,Max,Step,Run_label,Resampling_style,Resampling_probability,Out_a),
+    close(Out_a).
+
+loop_arithm_cond_prob(Curr,Max,_,_,_,_,_):-
+    Curr>Max,
+    !.
+
+loop_arithm_cond_prob(Curr, Max, Step, Runs, Resampling_style, Resampling_probability, Out):-
+    Samples is Curr,
+    measure_arithm_cond_prob(Time_adapt_on, Samples, 'on', Resampling_style, Resampling_probability, Prob_adapt_on),
+    measure_arithm_cond_prob(Time_adapt_off, Samples, 'off', Resampling_style, Resampling_probability, Prob_adapt_off),
+    format("run ~q, sample ~q of ~q\n", [Runs, Samples, Max]),
+    format(Out, "~q,~q,~q,~q,~q,~q\n", [Runs, Samples, Time_adapt_on, Prob_adapt_on, Time_adapt_off, Prob_adapt_off]),
+    flush_output(Out),
+    flush_output,
+    N is Curr+Step,
+    loop_arithm_cond_prob(N,Max,Step,Runs,Resampling_style,Resampling_probability,Out).
+
+measure_arithm_cond_prob(Time, Samples, Adaptation, Resampling_style, Resampling_probability, Prob) :-
+    adaptation(Adaptation),
+    ( Resampling_style = 'singleswitch' 
+      -> resampling_style(singleswitch)
+      ; 1 = 1),
+    ( Resampling_style = 'multiswitch' 
+      -> resampling_style(multiswitch(Resampling_probability))
+      ; 1 = 1),
+    statistics(walltime,Before),
+    cond_prob(eval(2,4),eval(1,3),100,Samples,Prob),
+    statistics(walltime,After),
+    to_milliseconds(After,Time),
+    writeln(Time).
+
