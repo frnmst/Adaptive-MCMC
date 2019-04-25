@@ -1,0 +1,42 @@
+/* The XSB version of the original arithm.pl file which is part of SWISH
+ * The license of this file is the same one used in SWISH: Simpified BSD license
+ *
+ * original path: ./examples/inference/arithm.pl
+ */
+
+eval(X,Y):-
+  random_fn(X,0,F),
+  Y is F.
+
+values(op(L),[+,-]).
+
+set_sw(op(L),[0.5,0.5]).
+
+random_fn(X,L,F):-
+  msw(comb(L),f),
+  base_random_fn(X,L,F).
+
+random_fn(X,L,F):-
+  msw(comb(L),t),
+  random_fn(X,l(L),F1),
+  random_fn(X,r(L),F2),
+  msw(op(L),Op),
+  F=..[Op,F1,F2].
+
+
+values(comb(L),[t,f]).
+set_sw(comb(L),[0.3,0.7]).
+
+base_random_fn(X,L,X):-
+  msw(identity(L),t).
+
+base_random_fn(_X,L,C):-
+  msw(identity(L),f),
+  msw(random_const(L),C).
+
+values(identity(L),[t,f]).
+set_sw(identity(L),[0.5,0.5]).
+
+values(random_const(L),[0,1,2,3,4,5,6,7,8,9]).
+set_sw(random_const(L),[0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]).
+

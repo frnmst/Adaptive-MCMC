@@ -10,6 +10,7 @@ the programs. These will be then compared with the mh and gibbs versions.
 ## New files
 
 - `tests.P`: another experiments file.
+- `arithm.P`: the XSB version of `arithm.pl`.
 
 ## Running
 
