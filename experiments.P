@@ -1,5 +1,5 @@
 /*
- * tests.P
+ * experiments.P
  *
  * Copyright 2018 Franco Masotti
  *
@@ -23,7 +23,7 @@
 to_milliseconds([Head,Seconds|Tail], Milliseconds) :-
     Milliseconds is Seconds * 1000.
 
-tests_single_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
+experiments_single_test33_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
     consult('./ami'),
     load_files(['./programs/bnets/test33']),
     writeln("performing test33.P on test33_cond_prob.csv\n"),
@@ -60,7 +60,7 @@ measure_test33_cond_prob(Time, Samples, Adaptation, Resampling_style, Resampling
     to_milliseconds(After,Time),
     writeln(Time).
 
-tests_single_arithm_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
+experiments_single_arithm_cond_prob(Min,Max,Step,Run_label,Resampling_style, Resampling_probability):-
     consult('./ami'),
     load_files(['./arithm']),
     writeln("performing arithm.P on arithm_cond_prob.csv\n"),
